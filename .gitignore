@@ -1,1 +1,19 @@
-/raw_data/Building_footprints/3b1_buildings.csv
+# The complete 4 GB building CSV is rebuilt from its parts, so keep it out of Git.
+/data/raw_data/Building_footprints/3b1_buildings.csv
+
+# Generated layers and artifacts
+data/interim/
+data/processed/
+models/
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets
+.env

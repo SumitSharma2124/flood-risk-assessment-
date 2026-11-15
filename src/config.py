@@ -1,0 +1,315 @@
+"""Central configuration for the Alappuzha flood-risk assessment.
+
+Every script imports paths, CRS and modelling settings from here so that all
+teammates work on the same projection, grid and output files.
+
+Run scripts from the project root, for example::
+
+    python -m src.01_clip_layers
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Project root and folders
+# ---------------------------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+DATA_DIR = PROJECT_ROOT / "data"
+RAW_DIR = DATA_DIR / "raw_data"
+INTERIM_DIR = DATA_DIR / "interim"
+PROCESSED_DIR = DATA_DIR / "processed"
+
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+MAPS_DIR = OUTPUTS_DIR / "maps"
+FIGURES_DIR = OUTPUTS_DIR / "figures"
+TABLES_DIR = OUTPUTS_DIR / "tables"
+
+MODELS_DIR = PROJECT_ROOT / "models"
+NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
+DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
+DOCS_DIR = PROJECT_ROOT / "docs"
+
+_FOLDERS = (
+    DATA_DIR,
+    RAW_DIR,
+    INTERIM_DIR,
+    PROCESSED_DIR,
+    OUTPUTS_DIR,
+    MAPS_DIR,
+    FIGURES_DIR,
+    TABLES_DIR,
+    MODELS_DIR,
+    NOTEBOOKS_DIR,
+    DASHBOARD_DIR,
+    DOCS_DIR,
+)
+
+for _folder in _FOLDERS:
+    _folder.mkdir(parents=True, exist_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# Raw input paths (exact folder names, including spaces and dots)
+# ---------------------------------------------------------------------------
+
+DEM_RAW = (
+    RAW_DIR
+    / "elevation"
+    / "Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif"
+)
+
+LANDCOVER_RAW = (
+    RAW_DIR
+    / "land_cover"
+    / "ESA_WorldCover_10m_2021_v200_N09E075_Map.tif"
+)
+
+KSDMA_DIR = RAW_DIR / "flood_probability"
+
+RETURN_PERIOD_FILES = {
+    10: KSDMA_DIR
+    / "1. Flood Return Probability History (10, 25, 50 years)"
+    / "Kerala_Flood_10_yr_Historical.tif",
+    25: KSDMA_DIR
+    / "1. Flood Return Probability History (10, 25, 50 years)"
+    / "Kerala_Flood_25_yr_Historical.tif",
+    50: KSDMA_DIR
+    / "1. Flood Return Probability History (10, 25, 50 years)"
+    / "Kerala_Flood_50_yr_Historical.tif",
+    100: KSDMA_DIR
+    / "2.Flood Return Probability History (100, 200, 500 years)"
+    / "Kerala_Flood_100_yr_Historical.tif",
+    200: KSDMA_DIR
+    / "2.Flood Return Probability History (100, 200, 500 years)"
+    / "Kerala_Flood_200_yr_Historical.tif",
+    500: KSDMA_DIR
+    / "2.Flood Return Probability History (100, 200, 500 years)"
+    / "Kerala_Flood_500_yr_Historical.tif",
+}
+
+FLOOD_2018_RAW = RAW_DIR / "flood_extent" / "kerala_flood_2018_s1.tif"
+
+ROADS_RAW = RAW_DIR / "roads" / "Alappuzha_roads.gpkg"
+WATERWAYS_RAW = RAW_DIR / "waterways" / "Alappuzha_waterways.gpkg"
+
+POPULATION_2018_RAW = (
+    RAW_DIR
+    / "population_count_100m"
+    / "ind_pop_2018_CN_100m_R2025A_v1.tif"
+)
+
+BUILDINGS_RAW = (
+    RAW_DIR / "Building_footprints" / "3b1_buildings.csv"
+)
+
+FACILITIES_RAW = (
+    RAW_DIR / "critical_facilities" / "critical_facilities.gpkg"
+)
+# Original QA polygon supplied with the facilities (~3,679 km2). It is much
+# larger than Alappuzha (~1,432 km2), so only about one third of the facilities
+# fall inside the district. Re-clip facilities to the real district boundary.
+FACILITIES_CLIP_BOUNDARY_RAW = (
+    RAW_DIR / "critical_facilities" / "clipping_boundary.geojson"
+)
+
+DISTRICTS_RAW = (
+    RAW_DIR / "district_boundaries" / "geoBoundaries-IND-ADM2.geojson"
+)
+
+VILLAGES_RAW = RAW_DIR / "village_boundaries" / "kl.geojson"
+VILLAGE_CODE_MAPPING_RAW = (
+    RAW_DIR / "village_boundaries" / "kl_village_2011_2001_code_mapping.txt"
+)
+
+CAMPS_RAW = (
+    RAW_DIR / "shelters" / "Monsoon-Camp-Details-ALL-Kerala.xlsx"
+)
+
+CENSUS_DIR = RAW_DIR / "census_2011_vulnerability_indicators"
+
+# Filled in Task 6. Alappuzha is district code 11, so look for the "3211"
+# files first. Example: {"population": CENSUS_DIR / "PCA_CDB-3211-F-Census.xlsx"}
+CENSUS_FILES: dict[str, Path] = {}
+
+
+# ---------------------------------------------------------------------------
+# Study settings
+# ---------------------------------------------------------------------------
+
+DISTRICT_NAME = "Alappuzha"
+
+# Column in the geoBoundaries ADM2 file that holds district names.
+DISTRICT_NAME_COLUMN = "shapeName"
+
+SCENARIO_NAME = "100yr"
+SCENARIO_RETURN_PERIOD = 100
+RETURN_PERIODS = (10, 25, 50, 100, 200, 500)
+
+KSDMA_SCENARIO_RAW = RETURN_PERIOD_FILES[SCENARIO_RETURN_PERIOD]
+
+CRS_GEOGRAPHIC = "EPSG:4326"
+CRS_WORKING = "EPSG:32643"  # UTM zone 43N
+
+
+# ---------------------------------------------------------------------------
+# Grid settings
+# ---------------------------------------------------------------------------
+
+GRID_RESOLUTION = 90  # metres
+DISTRICT_BUFFER_M = 1000  # metres around the district boundary
+GRID_PATH = PROCESSED_DIR / f"grid_{DISTRICT_NAME.lower()}_{GRID_RESOLUTION}m.tif"
+
+
+# ---------------------------------------------------------------------------
+# NoData rules
+# ---------------------------------------------------------------------------
+
+NODATA = -9999.0
+
+# Raw KSDMA rasters use -3.4e38; the 500-year raster records NoData as 0.
+KSDMA_NODATA = -3.4028230607370965e38
+KSDMA_NODATA_500 = 0.0
+KSDMA_NODATA_BY_RETURN_PERIOD = {
+    10: (KSDMA_NODATA,),
+    25: (KSDMA_NODATA,),
+    50: (KSDMA_NODATA,),
+    100: (KSDMA_NODATA,),
+    200: (KSDMA_NODATA,),
+    500: (KSDMA_NODATA_500,),
+}
+KSDMA_NODATA_VALUES = KSDMA_NODATA_BY_RETURN_PERIOD[SCENARIO_RETURN_PERIOD]
+
+# Mask of cells where KSDMA actually modelled flood probability (as opposed to
+# the background NoData surrounding the modelled area).
+KSDMA_MASK_NAME = "ksdma_modelled_mask.tif"
+KSDMA_MASK_PATH = PROCESSED_DIR / KSDMA_MASK_NAME
+
+
+# ---------------------------------------------------------------------------
+# Thresholds and model settings
+# ---------------------------------------------------------------------------
+
+BUILDING_CONFIDENCE_THRESHOLD = 0.7
+FLOOD_MASK_THRESHOLD = 0.5
+
+RANDOM_SEED = 42
+
+PATCH_SIZE = 64
+BLOCK_SIZE_M = 5000.0  # spatial block size for the geographic train/test split
+
+TRAIN_FRAC = 0.70
+VAL_FRAC = 0.15
+TEST_FRAC = 0.15
+
+# Weights (lambda values) for the routing cost surface.
+ROUTING_LAMBDAS = {
+    "slope": 1.0,
+    "land_cover": 1.0,
+    "roads": 0.5,
+    "waterways": 0.5,
+}
+
+
+# ---------------------------------------------------------------------------
+# ESA WorldCover classes (v200, 2021)
+# ---------------------------------------------------------------------------
+
+ESA_WORLDCOVER_CLASSES = {
+    10: "Tree cover",
+    20: "Shrubland",
+    30: "Grassland",
+    40: "Cropland",
+    50: "Built-up",
+    60: "Bare / sparse vegetation",
+    70: "Snow and ice",
+    80: "Permanent water bodies",
+    90: "Herbaceous wetland",
+    95: "Mangroves",
+    100: "Moss and lichen",
+}
+
+
+# ---------------------------------------------------------------------------
+# Output file names: every script must use these
+# ---------------------------------------------------------------------------
+
+OUTPUT_FILES = {
+    # Interim clipped layers
+    "district": INTERIM_DIR / f"district_{DISTRICT_NAME.lower()}.gpkg",
+    "dem_interim": INTERIM_DIR / "dem_alappuzha.tif",
+    "landcover_interim": INTERIM_DIR / "landcover_alappuzha.tif",
+    "ksdma_interim": INTERIM_DIR / f"ksdma_{SCENARIO_NAME}_alappuzha.tif",
+    "flood2018_interim": INTERIM_DIR / "flood_2018_alappuzha.tif",
+    "population_interim": INTERIM_DIR / "population_2018_alappuzha.tif",
+    "roads_interim": INTERIM_DIR / "roads_alappuzha.gpkg",
+    "waterways_interim": INTERIM_DIR / "waterways_alappuzha.gpkg",
+    "buildings_interim": INTERIM_DIR / "buildings_alappuzha.gpkg",
+    "facilities_interim": INTERIM_DIR / "critical_facilities_alappuzha.gpkg",
+    # Aligned 90 m grid
+    "grid": GRID_PATH,
+    "dem_grid": PROCESSED_DIR / "dem_90m.tif",
+    "landcover_grid": PROCESSED_DIR / "landcover_90m.tif",
+    "ksdma_grid": PROCESSED_DIR / f"ksdma_{SCENARIO_NAME}_90m.tif",
+    "flood2018_grid": PROCESSED_DIR / "flood_2018_90m.tif",
+    "population_grid": PROCESSED_DIR / "population_2018_90m.tif",
+    "builtup_grid": PROCESSED_DIR / "builtup_90m.tif",
+    "roads_grid": PROCESSED_DIR / "roads_90m.tif",
+    "waterways_grid": PROCESSED_DIR / "waterways_90m.tif",
+    "distance_roads_grid": PROCESSED_DIR / "distance_to_roads_90m.tif",
+    "distance_waterways_grid": PROCESSED_DIR / "distance_to_waterways_90m.tif",
+    "ksdma_mask": KSDMA_MASK_PATH,
+    # Later modelling outputs
+    "feature_stack": PROCESSED_DIR / "feature_stack.npz",
+    "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
+    "model": MODELS_DIR / "flood_risk_model.pt",
+}
+
+
+def output_path(name: str) -> Path:
+    """Return a configured output path by logical name."""
+    try:
+        return OUTPUT_FILES[name]
+    except KeyError as exc:
+        raise KeyError(
+            f"Unknown output '{name}'. Available: {sorted(OUTPUT_FILES)}"
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Input validation
+# ---------------------------------------------------------------------------
+
+RAW_INPUTS = {
+    "dem": DEM_RAW,
+    "landcover": LANDCOVER_RAW,
+    **{f"ksdma_{rp}yr": path for rp, path in RETURN_PERIOD_FILES.items()},
+    "flood_2018": FLOOD_2018_RAW,
+    "roads": ROADS_RAW,
+    "waterways": WATERWAYS_RAW,
+    "population_2018": POPULATION_2018_RAW,
+    "buildings": BUILDINGS_RAW,
+    "facilities": FACILITIES_RAW,
+    "facilities_clip_boundary": FACILITIES_CLIP_BOUNDARY_RAW,
+    "districts": DISTRICTS_RAW,
+    "villages": VILLAGES_RAW,
+    "village_code_mapping": VILLAGE_CODE_MAPPING_RAW,
+    "camps": CAMPS_RAW,
+}
+
+
+def missing_input_paths(paths: dict[str, Path] | None = None) -> list[Path]:
+    """Return raw input paths that do not exist (empty list means all good)."""
+    paths = paths or RAW_INPUTS
+    return [Path(path) for path in paths.values() if not Path(path).exists()]
+
+
+def check_input_paths(paths: dict[str, Path] | None = None) -> None:
+    """Raise FileNotFoundError if any configured raw input is missing."""
+    missing = missing_input_paths(paths)
+    if missing:
+        formatted = "\n".join(f"  - {path}" for path in missing)
+        raise FileNotFoundError(f"Missing {len(missing)} input file(s):\n{formatted}")

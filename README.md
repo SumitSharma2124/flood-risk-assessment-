@@ -1,28 +1,90 @@
-# Flood Risk Assessment — Raw Data
+# Alappuzha Flood-Risk Assessment
 
-Raw geospatial and socio-economic datasets used for the Kerala flood-risk
-assessment (Alappuzha, Kottayam, and Pathanamthitta districts).
+Machine-learning flood-risk assessment for Alappuzha district, Kerala. The
+project combines terrain, land cover, rainfall/return-period flood probability,
+population, buildings, roads, waterways, critical facilities and census
+indicators on a common 90 m grid in UTM zone 43N (EPSG:32643).
 
-Large files are stored with [Git LFS](https://git-lfs.com/). Install it before
-cloning, otherwise the files will be downloaded as small pointer files.
+Code and raw data are versioned in Git. Large raw files use Git LFS; the only
+file kept out of Git is the reconstructed 4 GB building CSV. All paths, CRS,
+grid settings, thresholds and output file names live in `src/config.py`, so
+every script uses the same inputs and writes to the same outputs.
 
-```bash
-git lfs install
-git clone https://github.com/SumitSharma2124/flood-risk-assessment-.git
+## Repository layout
+
+```
+flood_risk/
+|-- src/
+|   |-- __init__.py
+|   |-- config.py          # paths, CRS, grid, NoData, thresholds, output names
+|   `-- utils.py           # shared raster/vector/grid/plot helpers
+|-- data/
+|   |-- raw_data/          # inputs, tracked with Git LFS
+|   |-- interim/           # clipped layers (ignored by Git)
+|   `-- processed/         # aligned 90 m grid and feature stack (ignored by Git)
+|-- outputs/
+|   |-- maps/
+|   |-- figures/
+|   `-- tables/
+|-- models/                # trained models (ignored by Git)
+|-- notebooks/             # quick exploration only
+|-- dashboard/             # Task 17 dashboard
+|-- docs/                  # SRS and plan of action
+|-- requirements.txt
+|-- requirement-cpu.txt
+|-- requirement-gpu.txt
+`-- README.md
 ```
 
-If you already cloned without LFS:
+`data/interim/`, `data/processed/`, `models/`, `outputs/`, `__pycache__/`,
+`.ipynb_checkpoints/` and `.env` are ignored by Git. `data/raw_data/` is tracked
+with Git LFS. Keep the raw folder names exactly as delivered (some contain
+spaces and dots); `config.py` holds the exact paths.
 
-```bash
+## Getting the data
+
+Raw data is stored in this repository with Git LFS. Install Git LFS once, then
+clone and pull the data:
+
+```powershell
+git lfs install
+git clone https://github.com/SumitSharma2124/flood-risk-assessment-.git
+cd flood-risk-assessment-
 git lfs pull
 ```
 
+If you already cloned the repository, run:
+
+```powershell
+git lfs install
+git lfs pull
+```
+
+The raw files should end up in `data/raw_data/`. Expected contents:
+
+| Folder | Contents |
+| --- | --- |
+| `Building_footprints/` | `3b1_buildings.csv` (Google Open Buildings, Kerala) |
+| `census_2011_vulnerability_indicators/` | Census 2011 DDW/PCA tables (Alappuzha is district code 11; look for `3211`) |
+| `critical_facilities/` | Facilities GeoPackage and the original clipping boundary |
+| `district_boundaries/` | `geoBoundaries-IND-ADM2.geojson` |
+| `elevation/` | Copernicus 30 m DEM tiles (only `N09_00_E076_00` is needed) |
+| `flood_extent/` | `kerala_flood_2018_s1.tif` and the 2018 flood reports |
+| `flood_probability/` | KSDMA return-period rasters (10–500 years) |
+| `land_cover/` | ESA WorldCover 10 m 2021 (`N09E075` tile is needed) |
+| `population_count_100m/` | Annual 100 m population counts (2018 is used) |
+| `rainfall/` | CHIRPS monthly rainfall (not used in the first pass) |
+| `roads/` | `Alappuzha_roads.gpkg` |
+| `shelters/` | Kerala monsoon camp Excel workbook |
+| `village_boundaries/` | `kl.geojson` and the 2001/2011 village code mapping |
+| `waterways/` | `Alappuzha_waterways.gpkg` |
+
 ## Rebuilding the building footprints CSV
 
-GitHub LFS rejects any single file larger than 2 GB. The original file
+GitHub LFS rejects any single file larger than 2 GB. The complete file
 
 ```
-raw_data/Building_footprints/3b1_buildings.csv   (4,082,787,227 bytes)
+data/raw_data/Building_footprints/3b1_buildings.csv   (4,082,787,227 bytes)
 ```
 
 is therefore stored as three byte-exact parts that must be concatenated **in
@@ -37,16 +99,16 @@ order**:
 ### Windows (PowerShell or cmd)
 
 ```powershell
-cmd /c copy /b raw_data\Building_footprints\3b1_buildings.csv.part00+raw_data\Building_footprints\3b1_buildings.csv.part01+raw_data\Building_footprints\3b1_buildings.csv.part02 raw_data\Building_footprints\3b1_buildings.csv
+cmd /c copy /b data\raw_data\Building_footprints\3b1_buildings.csv.part00+data\raw_data\Building_footprints\3b1_buildings.csv.part01+data\raw_data\Building_footprints\3b1_buildings.csv.part02 data\raw_data\Building_footprints\3b1_buildings.csv
 ```
 
 ### Linux / macOS
 
 ```bash
-cat raw_data/Building_footprints/3b1_buildings.csv.part00 \
-    raw_data/Building_footprints/3b1_buildings.csv.part01 \
-    raw_data/Building_footprints/3b1_buildings.csv.part02 \
-    > raw_data/Building_footprints/3b1_buildings.csv
+cat data/raw_data/Building_footprints/3b1_buildings.csv.part00 \
+    data/raw_data/Building_footprints/3b1_buildings.csv.part01 \
+    data/raw_data/Building_footprints/3b1_buildings.csv.part02 \
+    > data/raw_data/Building_footprints/3b1_buildings.csv
 ```
 
 ### Verify the rebuilt file
@@ -58,33 +120,107 @@ The SHA-256 checksum of the complete file must be:
 ```
 
 ```powershell
-# Windows
-Get-FileHash raw_data\Building_footprints\3b1_buildings.csv -Algorithm SHA256
+Get-FileHash data\raw_data\Building_footprints\3b1_buildings.csv -Algorithm SHA256
 ```
 
-```bash
-# Linux / macOS
-sha256sum raw_data/Building_footprints/3b1_buildings.csv
+The combined `3b1_buildings.csv` is listed in `.gitignore`, so only the three
+parts are committed.
+
+Check that every configured input exists:
+
+```powershell
+python -c "from src import config as cfg; cfg.check_input_paths(); print('all inputs present')"
 ```
 
-The rebuilt `3b1_buildings.csv` is listed in `.gitignore`, so it will not be
-committed again.
+## Installation
 
-## Directory layout
+The pinned versions were tested with **Python 3.14, 64-bit, on Windows**. Use a
+virtual environment so the whole team gets the same results.
 
-| Directory | Contents |
-| --- | --- |
-| `Building_footprints/` | Building footprint polygons for Kerala (Google Open Buildings export, split into parts) |
-| `census_2011_vulnerability_indicators/` | Census 2011 tables (DDW, PCA, SC/ST) for district code 3200 |
-| `critical_facilities/` | Critical facilities vector layer and clipping boundary |
-| `district_boundaries/` | India ADM2 district boundaries (geoBoundaries) |
-| `elevation/` | Copernicus 30 m DEM tiles |
-| `flood_extent/` | 2018 Kerala flood extent, duration, and inundation reports |
-| `flood_probability/` | Return-period flood probability rasters (10–500 years) |
-| `land_cover/` | ESA WorldCover 10 m 2021 land cover tiles |
-| `population_count_100m/` | Annual 100 m population count rasters (2015–2025) |
-| `rainfall/` | CHIRPS v3.0 monthly rainfall rasters (June–September, 2018–2020) |
-| `roads/` | Road networks for Alappuzha, Kottayam, and Pathanamthitta |
-| `shelters/` | Kerala monsoon camp and shelter lists |
-| `village_boundaries/` | Kerala village boundaries and 2001/2011 code mapping |
-| `waterways/` | Waterway networks for Alappuzha, Kottayam, and Pathanamthitta |
+### CPU-only machines (most teammates)
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -r requirement-cpu.txt --index-url https://download.pytorch.org/whl/cpu
+```
+
+### GPU machines (GTX 1650, CUDA 13.2)
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -r requirement-gpu.txt --index-url https://download.pytorch.org/whl/cu132
+```
+
+`requirements.txt` is a pinned freeze of the development environment.
+`requirement-cpu.txt` and `requirement-gpu.txt` only add the matching PyTorch
+build.
+
+## Running the pipeline
+
+Always run scripts **from the project root** so package imports work:
+
+```powershell
+python -m src.01_clip_layers
+```
+
+Scripts are added task by task. Planned run order:
+
+1. Clip raw layers to the district (`python -m src.01_clip_layers`).
+2. Build and save the common 90 m grid, then align every layer to it.
+3. Build features and flood labels (KSDMA 100-year scenario).
+4. Create the spatial-block train/validation/test split.
+5. Train and tune the model.
+6. Evaluate, interpret and export risk maps/tables.
+7. Build the dashboard.
+
+## Configuration
+
+`src/config.py` is the single source of truth:
+
+- `PROJECT_ROOT` is derived from the file location, so the project runs on any
+  machine.
+- Folders under `data/`, `outputs/`, `models/`, `docs/`, `notebooks/` and
+  `dashboard/` are created automatically on import.
+- Study settings: `DISTRICT_NAME = "Alappuzha"`, `SCENARIO_NAME = "100yr"`,
+  `RETURN_PERIODS = (10, 25, 50, 100, 200, 500)`.
+- CRS: `EPSG:4326` for geographic data and `EPSG:32643` (UTM 43N) for analysis.
+- Grid: 90 m cells, 1 km buffer around the district boundary, saved at
+  `data/processed/grid_alappuzha_90m.tif`.
+- NoData: `-9999` for processed rasters; raw KSDMA NoData is `-3.4e38` (and
+  `0` for the 500-year raster).
+- Model settings: building confidence `0.7`, flood-mask threshold `0.5`,
+  random seed `42`, patch size `64`, 5 km spatial blocks, 70/15/15 split.
+- `OUTPUT_FILES` defines every interim/processed output path. Use
+  `cfg.output_path("dem_grid")` rather than hard-coding file names in scripts.
+
+`src/utils.py` provides the shared helpers: logger and seed setup, raster/vector
+read-write, district loading, buffered clipping with windowed reads, grid
+construction/alignment/rasterisation, NoData handling, grid checks, raster
+summaries and map plotting.
+
+## Data checks performed during setup
+
+- `Building_footprints/3b1_buildings.csv` is complete. Its SHA-256 is
+  `372463300AACC982FCEC99A244D9EBCEEDB27088CEB2FF7FF72E8E748C6E8302` and its
+  extent covers Alappuzha. The three LFS parts are kept so the file can be
+  reconstructed after cloning.
+- `geoBoundaries-IND-ADM2.geojson` uses the column **`shapeName`**; the
+  `Alappuzha` row is present.
+- The DEM tile `Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif` covers the whole
+  district (district bounds: 76.277–76.693°E, 9.110–9.892°N). No other DEM tile
+  is needed.
+- The critical facilities were **not** clipped to Alappuzha. They follow
+  `clipping_boundary.geojson`, a custom polygon of about 3,679 km² (the district
+  is about 1,432 km²), and only 1,195 of 3,675 facilities fall inside
+  Alappuzha. Task 2 must re-clip them to the district boundary.
+- The village file contains 88 Alappuzha villages, and the district name column
+  is `DISTRICT`.
+- Census files use state/district code `32`/`11`, so the Alappuzha files start
+  with `3211`. The shortlist is added to `CENSUS_FILES` in `config.py` in
+  Task 6.

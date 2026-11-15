@@ -1,0 +1,935 @@
+"""Shared helpers for the Alappuzha flood-risk assessment.
+
+The functions here keep raster/vector handling consistent across all task
+scripts: same CRS, same 90 m grid, same NoData convention and the same output
+paths (defined in :mod:`src.config`).
+
+Typical use::
+
+    from src import config as cfg
+    from src import utils
+
+    district = utils.load_district()
+    data, profile, nodata = utils.read_raster(cfg.DEM_RAW)
+"""
+
+from __future__ import annotations
+
+import logging
+import random
+from collections.abc import Iterable, Mapping, Sequence
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+try:  # allows both "python -m src.script" and "python src/script.py"
+    from . import config as cfg
+except ImportError:  # pragma: no cover - direct execution fallback
+    import config as cfg  # type: ignore[no-redef]
+
+
+# ---------------------------------------------------------------------------
+# General helpers
+# ---------------------------------------------------------------------------
+
+
+def make_folder(path: str | Path) -> Path:
+    """Create a folder (and parents) if it does not exist and return it."""
+    path = Path(path)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def get_logger(name: str = "flood_risk", level: int = logging.INFO) -> logging.Logger:
+    """Return a console logger without adding duplicate handlers."""
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s | %(levelname)-7s | %(name)s | %(message)s")
+        )
+        logger.addHandler(handler)
+    logger.setLevel(level)
+    logger.propagate = False
+    return logger
+
+
+def set_seed(seed: int = cfg.RANDOM_SEED) -> int:
+    """Seed Python, NumPy and (if installed) PyTorch."""
+    random.seed(seed)
+    np.random.seed(seed)
+
+    try:
+        import torch
+    except ImportError:
+        return seed
+
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    return seed
+
+
+# ---------------------------------------------------------------------------
+# Reading and writing
+# ---------------------------------------------------------------------------
+
+
+def read_raster(
+    path: str | Path, band: int = 1
+) -> tuple[np.ndarray, dict[str, Any], float | int | None]:
+    """Read one raster band and return ``(data, profile, nodata)``."""
+    import rasterio
+
+    with rasterio.open(path) as src:
+        data = src.read(band)
+        profile = src.profile.copy()
+        nodata = src.nodata
+    return data, profile, nodata
+
+
+def write_raster(
+    data: np.ndarray,
+    out_path: str | Path,
+    template: str | Path | Mapping[str, Any],
+    *,
+    nodata: float | int | None = None,
+    dtype: str | None = None,
+    compress: str | None = "lzw",
+    **profile_updates: Any,
+) -> Path:
+    """Write ``data`` to ``out_path`` using another raster's profile.
+
+    ``template`` may be a raster path or a rasterio profile dict.  The output
+    is always a single-band GeoTIFF.
+    """
+    import rasterio
+
+    out_path = Path(out_path)
+    make_folder(out_path.parent)
+
+    if isinstance(template, (str, Path)):
+        with rasterio.open(template) as src:
+            profile = src.profile.copy()
+    else:
+        profile = dict(template)
+
+    data = np.asarray(data)
+    if data.ndim != 2:
+        raise ValueError(f"Expected a 2-D array, got shape {data.shape}")
+
+    profile.update(
+        driver="GTiff",
+        count=1,
+        height=data.shape[0],
+        width=data.shape[1],
+    )
+    if dtype is not None:
+        profile["dtype"] = dtype
+    if nodata is not None:
+        profile["nodata"] = nodata
+    if compress is not None:
+        profile["compress"] = compress
+    profile.update(profile_updates)
+
+    with rasterio.open(out_path, "w", **profile) as dst:
+        dst.write(data.astype(profile["dtype"], copy=False), 1)
+
+    return out_path
+
+
+def read_vector(path: str | Path, **kwargs: Any):
+    """Read a vector layer as a GeoDataFrame."""
+    import geopandas as gpd
+
+    return gpd.read_file(path, **kwargs)
+
+
+def write_vector(
+    gdf: Any,
+    out_path: str | Path,
+    driver: str | None = None,
+    **kwargs: Any,
+) -> Path:
+    """Write a GeoDataFrame, inferring the driver from the file extension."""
+    out_path = Path(out_path)
+    make_folder(out_path.parent)
+
+    if driver is None:
+        suffix = out_path.suffix.lower()
+        driver = {
+            ".gpkg": "GPKG",
+            ".geojson": "GeoJSON",
+            ".json": "GeoJSON",
+            ".shp": "ESRI Shapefile",
+        }.get(suffix)
+
+    if driver is None:
+        gdf.to_file(out_path, **kwargs)
+    else:
+        gdf.to_file(out_path, driver=driver, **kwargs)
+    return out_path
+
+
+# ---------------------------------------------------------------------------
+# CRS and district
+# ---------------------------------------------------------------------------
+
+
+def reproject_vector(gdf: Any, crs: Any):
+    """Reproject a GeoDataFrame to ``crs`` (no-op if it is already there)."""
+    if gdf.crs is None:
+        return gdf.set_crs(crs)
+    return gdf.to_crs(crs)
+
+
+def load_district(
+    name: str = cfg.DISTRICT_NAME,
+    crs: Any = cfg.CRS_WORKING,
+    *,
+    path: str | Path = cfg.DISTRICTS_RAW,
+    name_column: str = cfg.DISTRICT_NAME_COLUMN,
+    as_geometry: bool = False,
+):
+    """Load one district polygon by name in the requested CRS.
+
+    Returns a one-row GeoDataFrame, or a single shapely geometry when
+    ``as_geometry=True``.
+    """
+    gdf = read_vector(path)
+    if name_column not in gdf.columns:
+        raise KeyError(
+            f"Column '{name_column}' not found in {path}. "
+            f"Available columns: {list(gdf.columns)}"
+        )
+
+    matches = gdf[
+        gdf[name_column].astype(str).str.strip().str.casefold() == name.strip().casefold()
+    ]
+    if matches.empty:
+        available = sorted(gdf[name_column].dropna().astype(str).unique())
+        close = [item for item in available if name.casefold() in item.casefold()]
+        raise ValueError(
+            f"District '{name}' not found in column '{name_column}'. "
+            f"Possible matches: {close or available[:10]}"
+        )
+
+    district = reproject_vector(matches.copy(), crs)
+    if as_geometry:
+        return district.geometry.union_all()
+    return district
+
+
+def _as_geometry_and_crs(
+    obj: Any,
+) -> tuple[Any, Any]:
+    """Coerce a geometry, GeoDataFrame, GeoSeries or path to (geometry, crs)."""
+    from shapely.geometry import shape
+
+    if isinstance(obj, (str, Path)):
+        gdf = read_vector(obj)
+        return gdf.geometry.union_all(), gdf.crs
+
+    if isinstance(obj, Mapping) and "type" in obj:
+        return shape(obj), None
+
+    if hasattr(obj, "geometry") and hasattr(obj, "crs"):
+        return obj.geometry.union_all(), obj.crs
+
+    if hasattr(obj, "union_all"):
+        return obj.union_all(), getattr(obj, "crs", None)
+
+    if hasattr(obj, "geom_type"):
+        return obj, None
+
+    raise TypeError(f"Cannot interpret {type(obj)!r} as a geometry layer")
+
+
+def _buffer_geometry(geom: Any, crs: Any, buffer_m: float) -> tuple[Any, Any]:
+    """Buffer a geometry by metres, projecting to the working CRS if needed."""
+    from pyproj import CRS, Transformer
+    from shapely.ops import transform as shapely_transform
+
+    if not buffer_m:
+        return geom, crs
+
+    if crs is None:
+        crs = cfg.CRS_WORKING
+
+    parsed = CRS.from_user_input(crs)
+    if parsed.is_projected:
+        return geom.buffer(buffer_m), crs
+
+    transformer = Transformer.from_crs(crs, cfg.CRS_WORKING, always_xy=True)
+    geom_working = shapely_transform(transformer.transform, geom)
+    return geom_working.buffer(buffer_m), cfg.CRS_WORKING
+
+
+# ---------------------------------------------------------------------------
+# Clipping
+# ---------------------------------------------------------------------------
+
+
+def clip_raster_to_polygon(
+    src_path: str | Path,
+    polygon: Any,
+    out_path: str | Path | None = None,
+    *,
+    all_touched: bool = False,
+    nodata: float | int | None = None,
+    buffer_m: float = 0.0,
+    band: int = 1,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Clip a raster to a polygon using a windowed read.
+
+    Only the window covering the polygon is read, so very large tiles (for
+    example the 36,000 x 36,000 WorldCover tile) are never loaded in full.
+    Cells outside the polygon are set to ``nodata`` (default: the source
+    raster's NoData, else :data:`src.config.NODATA`).
+    """
+    import rasterio
+    from rasterio.features import geometry_mask
+    from rasterio.warp import transform_geom
+    from rasterio.windows import Window, from_bounds
+    from shapely.geometry import mapping, shape
+
+    geom, geom_crs = _as_geometry_and_crs(polygon)
+    geom, geom_crs = _buffer_geometry(geom, geom_crs, buffer_m)
+
+    with rasterio.open(src_path) as src:
+        if geom_crs is not None and src.crs is not None and geom_crs != src.crs:
+            geom = shape(
+                transform_geom(
+                    geom_crs,
+                    src.crs,
+                    mapping(geom),
+                )
+            )
+
+        window = from_bounds(*geom.bounds, transform=src.transform)
+        window = window.round_offsets().round_lengths()
+        window = window.intersection(Window(0, 0, src.width, src.height))
+        if window.width <= 0 or window.height <= 0:
+            raise ValueError(
+                f"Polygon does not overlap raster {src_path} "
+                f"(bounds {tuple(src.bounds)})"
+            )
+
+        data = src.read(band, window=window)
+        transform = src.window_transform(window)
+        profile = src.profile.copy()
+
+        requested_nodata = (
+            nodata if nodata is not None else src.nodata if src.nodata is not None else cfg.NODATA
+        )
+        out_nodata = _safe_nodata(data.dtype, requested_nodata)
+
+        inside = geometry_mask(
+            [geom],
+            out_shape=data.shape,
+            transform=transform,
+            invert=True,
+            all_touched=all_touched,
+        )
+        clipped = data.copy()
+        clipped[~inside] = out_nodata
+
+        profile.update(
+            driver="GTiff",
+            height=data.shape[0],
+            width=data.shape[1],
+            count=1,
+            transform=transform,
+            nodata=out_nodata,
+            compress="lzw",
+        )
+
+    if out_path is not None:
+        write_raster(
+            clipped,
+            out_path,
+            profile,
+            nodata=out_nodata,
+            compress="lzw",
+        )
+
+    return clipped, profile
+
+
+def clip_vector_to_polygon(
+    vector: Any,
+    polygon: Any,
+    out_path: str | Path | None = None,
+    *,
+    buffer_m: float = 0.0,
+):
+    """Clip a vector layer to a polygon and optionally write the result."""
+    import geopandas as gpd
+    from rasterio.warp import transform_geom
+    from shapely.geometry import mapping, shape
+
+    gdf = read_vector(vector) if isinstance(vector, (str, Path)) else vector.copy()
+    geom, geom_crs = _as_geometry_and_crs(polygon)
+    geom, geom_crs = _buffer_geometry(geom, geom_crs, buffer_m)
+
+    if (
+        geom_crs is not None
+        and gdf.crs is not None
+        and geom_crs != gdf.crs
+    ):
+        geom = shape(
+            transform_geom(
+                geom_crs,
+                gdf.crs,
+                mapping(geom),
+            )
+        )
+
+    clipped = gpd.clip(gdf, geom)
+
+    if out_path is not None:
+        write_vector(clipped, out_path)
+
+    return clipped
+
+
+# ---------------------------------------------------------------------------
+# Grid alignment
+# ---------------------------------------------------------------------------
+
+
+def _coerce_grid(template: Any) -> dict[str, Any]:
+    """Return a grid dict from a profile, grid dict or raster path."""
+    import rasterio
+    from rasterio.crs import CRS
+    from rasterio.transform import array_bounds
+
+    if isinstance(template, (str, Path)):
+        with rasterio.open(template) as src:
+            profile = src.profile.copy()
+            bounds = src.bounds
+    elif isinstance(template, Mapping):
+        profile = dict(template.get("profile", template))
+        if "transform" not in profile or "width" not in profile:
+            raise ValueError("Grid mapping must contain transform and width/height")
+        bounds = None
+    else:
+        raise TypeError(f"Cannot interpret {type(template)!r} as a grid")
+
+    profile.setdefault("count", 1)
+    transform = profile["transform"]
+    width = int(profile["width"])
+    height = int(profile["height"])
+
+    if bounds is None:
+        left, bottom, right, top = array_bounds(height, width, transform)
+    else:
+        left, bottom, right, top = bounds
+
+    return {
+        "crs": CRS.from_user_input(profile["crs"]),
+        "transform": transform,
+        "width": width,
+        "height": height,
+        "profile": profile,
+        "bounds": (left, bottom, right, top),
+    }
+
+
+def build_grid(
+    bounds: Sequence[float] | None = None,
+    *,
+    district: Any | None = None,
+    resolution: float = cfg.GRID_RESOLUTION,
+    crs: Any = cfg.CRS_WORKING,
+    buffer_m: float = cfg.DISTRICT_BUFFER_M,
+    dtype: str = "float32",
+) -> dict[str, Any]:
+    """Build the common analysis grid from an extent, resolution and CRS.
+
+    Provide either ``bounds`` (minx, miny, maxx, maxy) or a ``district``
+    (geometry, GeoDataFrame or path).  The grid is snapped outwards to whole
+    resolution steps so that every script gets identical cell edges.
+    """
+    from math import ceil, floor
+
+    import geopandas as gpd
+    from rasterio.crs import CRS
+    from rasterio.transform import from_origin
+
+    crs = CRS.from_user_input(crs)
+
+    if district is not None:
+        geom, geom_crs = _as_geometry_and_crs(district)
+        if geom_crs is not None and geom_crs != crs:
+            geometry = gpd.GeoSeries([geom], crs=geom_crs).to_crs(crs).iloc[0]
+        else:
+            geometry = geom
+        bounds = geometry.bounds
+    elif bounds is None:
+        bounds = load_district(crs=crs, as_geometry=True).bounds
+
+    minx, miny, maxx, maxy = (float(value) for value in bounds)
+    minx -= buffer_m
+    miny -= buffer_m
+    maxx += buffer_m
+    maxy += buffer_m
+
+    left = floor(minx / resolution) * resolution
+    bottom = floor(miny / resolution) * resolution
+    right = ceil(maxx / resolution) * resolution
+    top = ceil(maxy / resolution) * resolution
+
+    width = int(round((right - left) / resolution))
+    height = int(round((top - bottom) / resolution))
+    transform = from_origin(left, top, resolution, resolution)
+
+    profile = {
+        "driver": "GTiff",
+        "dtype": dtype,
+        "count": 1,
+        "crs": crs,
+        "transform": transform,
+        "width": width,
+        "height": height,
+        "nodata": cfg.NODATA,
+        "compress": "lzw",
+        "BIGTIFF": "IF_SAFER",
+    }
+
+    return {
+        "crs": crs,
+        "transform": transform,
+        "width": width,
+        "height": height,
+        "resolution": resolution,
+        "bounds": (left, bottom, right, top),
+        "profile": profile,
+    }
+
+
+def save_grid(grid: Mapping[str, Any], out_path: str | Path = cfg.GRID_PATH) -> Path:
+    """Save an all-zero raster that records the common grid definition."""
+    data = np.zeros((int(grid["height"]), int(grid["width"])), dtype="float32")
+    return write_raster(
+        data,
+        out_path,
+        grid["profile"],
+        nodata=cfg.NODATA,
+        dtype="float32",
+    )
+
+
+def align_raster(
+    src_path: str | Path,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    method: str | None = None,
+    resampling: Any | None = None,
+    dtype: str | None = None,
+    nodata: float | int | None = None,
+    preserve_sum: bool = False,
+    band: int = 1,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Resample a raster onto the common grid.
+
+    The resampling method defaults to nearest for integer rasters (classes)
+    and bilinear for continuous float rasters.  Pass ``preserve_sum=True``
+    (or ``method="sum"``) for population counts.
+    """
+    import rasterio
+    from rasterio.enums import Resampling
+    from rasterio.warp import reproject, transform_bounds
+    from rasterio.windows import Window, from_bounds
+
+    grid = _coerce_grid(template)
+
+    with rasterio.open(src_path) as src:
+        if src.crs is None:
+            raise ValueError(f"Raster {src_path} has no CRS")
+
+        src_bounds = transform_bounds(
+            grid["crs"],
+            src.crs,
+            *grid["bounds"],
+            densify_pts=21,
+        )
+        window = from_bounds(*src_bounds, transform=src.transform)
+        window = window.round_offsets().round_lengths()
+        window = window.intersection(Window(0, 0, src.width, src.height))
+        if window.width <= 0 or window.height <= 0:
+            raise ValueError(f"Raster {src_path} does not overlap the grid")
+
+        source = src.read(band, window=window)
+        src_transform = src.window_transform(window)
+        src_crs = src.crs
+        src_nodata = src.nodata
+
+    if resampling is not None:
+        method_enum = resampling
+    elif method is not None:
+        method_enum = Resampling[method.lower()]
+    elif preserve_sum:
+        method_enum = Resampling.sum
+    elif np.issubdtype(source.dtype, np.integer):
+        method_enum = Resampling.nearest
+    else:
+        method_enum = Resampling.bilinear
+
+    dst_dtype = np.dtype(dtype) if dtype is not None else source.dtype
+
+    is_sum = method_enum == Resampling.sum
+    if is_sum:
+        # Sum resampling needs a zero background so overlapping source cells
+        # add up correctly. Valid-source cells are tracked separately below.
+        fill = 0
+    else:
+        fill = nodata if nodata is not None else cfg.NODATA
+    dst_nodata = _safe_nodata(dst_dtype, fill)
+
+    destination = np.full(
+        (grid["height"], grid["width"]),
+        fill,
+        dtype=dst_dtype,
+    )
+
+    reproject(
+        source=source,
+        destination=destination,
+        src_transform=src_transform,
+        src_crs=src_crs,
+        src_nodata=src_nodata,
+        dst_transform=grid["transform"],
+        dst_crs=grid["crs"],
+        dst_nodata=dst_nodata,
+        resampling=method_enum,
+    )
+
+    if is_sum:
+        # Keep genuine zeros (for example unpopulated cells) but replace areas
+        # with no source coverage by the standard processed NoData value.
+        if src_nodata is not None:
+            source_valid = source != src_nodata
+            if np.issubdtype(source.dtype, np.floating):
+                source_valid &= np.isfinite(source)
+        elif np.issubdtype(source.dtype, np.floating):
+            source_valid = np.isfinite(source)
+        else:
+            source_valid = np.ones(source.shape, dtype=bool)
+
+        valid_destination = np.zeros(
+            (grid["height"], grid["width"]),
+            dtype="uint8",
+        )
+        reproject(
+            source=source_valid.astype("uint8"),
+            destination=valid_destination,
+            src_transform=src_transform,
+            src_crs=src_crs,
+            src_nodata=None,
+            dst_transform=grid["transform"],
+            dst_crs=grid["crs"],
+            dst_nodata=0,
+            resampling=Resampling.nearest,
+        )
+
+        dst_nodata = _safe_nodata(dst_dtype, cfg.NODATA)
+        destination[valid_destination == 0] = dst_nodata
+
+    profile = grid["profile"].copy()
+    profile.update(
+        dtype=dst_dtype.name,
+        count=1,
+        nodata=dst_nodata,
+    )
+
+    if out_path is not None:
+        write_raster(
+            destination,
+            out_path,
+            profile,
+            nodata=dst_nodata,
+            dtype=dst_dtype.name,
+        )
+
+    return destination, profile
+
+
+def rasterize_vector(
+    vector: Any,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    attribute: str | None = None,
+    burn_value: float | int = 1,
+    fill: float | int = 0,
+    all_touched: bool = False,
+    dtype: str = "uint8",
+    nodata: float | int | None = None,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Rasterise a vector layer onto the common grid."""
+    import rasterio
+    from rasterio.features import rasterize
+
+    gdf = read_vector(vector) if isinstance(vector, (str, Path)) else vector.copy()
+    grid = _coerce_grid(template)
+
+    if gdf.crs is not None and gdf.crs != grid["crs"]:
+        gdf = gdf.to_crs(grid["crs"])
+
+    if attribute is not None:
+        if attribute not in gdf.columns:
+            raise KeyError(f"Column '{attribute}' not found in vector layer")
+        shapes = list(zip(gdf.geometry, gdf[attribute]))
+    else:
+        shapes = [(geom, burn_value) for geom in gdf.geometry if geom is not None]
+
+    result = rasterize(
+        shapes=shapes,
+        out_shape=(grid["height"], grid["width"]),
+        transform=grid["transform"],
+        fill=fill,
+        all_touched=all_touched,
+        dtype=dtype,
+    )
+
+    out_nodata = _safe_nodata(result.dtype, nodata) if nodata is not None else None
+    profile = grid["profile"].copy()
+    profile.update(dtype=np.dtype(dtype).name, count=1, nodata=out_nodata)
+
+    if out_path is not None:
+        write_raster(result, out_path, profile, nodata=out_nodata, dtype=dtype)
+
+    return result, profile
+
+
+# ---------------------------------------------------------------------------
+# NoData and checks
+# ---------------------------------------------------------------------------
+
+
+def _safe_nodata(dtype: Any, value: float | int | None) -> float | int | None:
+    """Return a NoData value that is representable by ``dtype``."""
+    dtype = np.dtype(dtype)
+    if value is None:
+        return None
+    if np.issubdtype(dtype, np.floating):
+        return float(value)
+    if isinstance(value, float) and np.isnan(value):
+        return int(np.iinfo(dtype).min)
+    value = int(round(float(value)))
+    info = np.iinfo(dtype)
+    if info.min <= value <= info.max:
+        return value
+    return int(info.max) if np.issubdtype(dtype, np.unsignedinteger) else int(info.min)
+
+
+def nodata_to_nan(
+    data: np.ndarray,
+    nodata_values: float | int | Iterable[float | int] | None = None,
+) -> np.ndarray:
+    """Convert one or more NoData values to NaN and return a float array."""
+    array = np.asarray(data)
+    out_dtype = np.float64 if array.dtype == np.float64 else np.float32
+    result = np.array(array, dtype=out_dtype, copy=True)
+
+    if nodata_values is None:
+        nodata_values = (cfg.NODATA,)
+    elif np.isscalar(nodata_values):
+        nodata_values = (nodata_values,)
+
+    for value in nodata_values:
+        if value is None:
+            continue
+        if isinstance(value, (float, np.floating)) and np.isnan(value):
+            continue
+        result[result == value] = np.nan
+
+    return result
+
+
+def valid_mask(
+    data: np.ndarray,
+    nodata_values: float | int | Iterable[float | int] | None = None,
+) -> np.ndarray:
+    """Return a boolean mask of cells that contain valid data."""
+    array = np.asarray(data)
+    if np.issubdtype(array.dtype, np.floating):
+        mask = np.isfinite(array)
+    else:
+        mask = np.ones(array.shape, dtype=bool)
+
+    if nodata_values is not None:
+        if np.isscalar(nodata_values):
+            nodata_values = (nodata_values,)
+        for value in nodata_values:
+            if value is None:
+                continue
+            if isinstance(value, (float, np.floating)) and np.isnan(value):
+                continue
+            mask &= array != value
+
+    return mask
+
+
+def raster_summary(
+    raster: str | Path | np.ndarray,
+    *,
+    nodata_values: float | int | Iterable[float | int] | None = None,
+    band: int = 1,
+    name: str | None = None,
+) -> dict[str, Any]:
+    """Print and return a compact raster summary."""
+    crs = None
+    nodata = None
+
+    if isinstance(raster, (str, Path)):
+        data, profile, nodata = read_raster(raster, band=band)
+        crs = profile.get("crs")
+        label = name or Path(raster).name
+    else:
+        data = np.asarray(raster)
+        label = name or "array"
+
+    if nodata_values is None and nodata is not None:
+        nodata_values = (nodata,)
+
+    array = nodata_to_nan(data, nodata_values)
+    finite = array[np.isfinite(array)]
+
+    stats = {
+        "name": label,
+        "shape": tuple(array.shape),
+        "crs": str(crs) if crs is not None else None,
+        "min": float(finite.min()) if finite.size else float("nan"),
+        "max": float(finite.max()) if finite.size else float("nan"),
+        "percent_nan": float(np.isnan(array).mean() * 100.0),
+        "nodata": nodata,
+    }
+
+    print(
+        f"{stats['name']}: shape={stats['shape']}, crs={stats['crs']}, "
+        f"min={stats['min']:.4g}, max={stats['max']:.4g}, "
+        f"NaN={stats['percent_nan']:.2f}%"
+    )
+    return stats
+
+
+def assert_same_grid(
+    raster_a: str | Path | Mapping[str, Any],
+    raster_b: str | Path | Mapping[str, Any],
+    *,
+    atol: float = 1e-6,
+) -> bool:
+    """Raise ``ValueError`` unless two rasters share CRS, transform and shape."""
+    grid_a = _coerce_grid(raster_a)
+    grid_b = _coerce_grid(raster_b)
+
+    problems: list[str] = []
+    if grid_a["crs"] != grid_b["crs"]:
+        problems.append(f"CRS differs ({grid_a['crs']} != {grid_b['crs']})")
+
+    transform_a = tuple(grid_a["transform"])[:6]
+    transform_b = tuple(grid_b["transform"])[:6]
+    if not np.allclose(transform_a, transform_b, atol=atol, rtol=0):
+        problems.append(f"transform differs ({transform_a} != {transform_b})")
+
+    shape_a = (grid_a["height"], grid_a["width"])
+    shape_b = (grid_b["height"], grid_b["width"])
+    if shape_a != shape_b:
+        problems.append(f"shape differs ({shape_a} != {shape_b})")
+
+    if problems:
+        raise ValueError("Rasters are not on the same grid: " + "; ".join(problems))
+
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Plotting
+# ---------------------------------------------------------------------------
+
+
+def plot_raster(
+    data: np.ndarray,
+    out_path: str | Path | None = None,
+    *,
+    transform: Any | None = None,
+    crs: Any | None = None,
+    district: Any | None = None,
+    title: str | None = None,
+    cmap: str = "viridis",
+    nodata_values: float | int | Iterable[float | int] | None = None,
+    colorbar: bool = True,
+    vmin: float | None = None,
+    vmax: float | None = None,
+    alpha: float = 1.0,
+    figsize: tuple[float, float] = (10, 8),
+    dpi: int = 150,
+):
+    """Plot a raster with an optional district outline and save it to disk."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from pyproj import CRS
+    from rasterio.transform import array_bounds
+
+    array = np.asarray(data)
+    if array.ndim == 3 and array.shape[0] == 1:
+        array = array[0]
+    if array.ndim != 2:
+        raise ValueError(f"Expected a 2-D raster, got shape {array.shape}")
+
+    array = nodata_to_nan(array, nodata_values)
+
+    extent = None
+    if transform is not None:
+        extent = array_bounds(array.shape[0], array.shape[1], transform)
+
+    fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    image = ax.imshow(
+        array,
+        extent=extent,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        alpha=alpha,
+    )
+
+    if district is not None:
+        gdf = read_vector(district) if isinstance(district, (str, Path)) else district
+        if (
+            crs is not None
+            and getattr(gdf, "crs", None) is not None
+            and gdf.crs != crs
+        ):
+            gdf = gdf.to_crs(crs)
+        gdf.boundary.plot(ax=ax, color="black", linewidth=0.8)
+
+    if title:
+        ax.set_title(title)
+
+    if crs is not None:
+        try:
+            projected = CRS.from_user_input(crs).is_projected
+        except Exception:
+            projected = False
+        ax.set_xlabel("Easting (m)" if projected else "Longitude")
+        ax.set_ylabel("Northing (m)" if projected else "Latitude")
+
+    if colorbar:
+        fig.colorbar(image, ax=ax, shrink=0.75, label="Value")
+
+    ax.set_aspect("equal")
+
+    if out_path is not None:
+        out_path = Path(out_path)
+        make_folder(out_path.parent)
+        fig.savefig(out_path, bbox_inches="tight")
+        plt.close(fig)
+        return out_path
+
+    return fig, ax
