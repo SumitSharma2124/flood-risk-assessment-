@@ -139,6 +139,56 @@ def write_raster(
     return out_path
 
 
+def write_multiband_raster(
+    data: np.ndarray,
+    out_path: str | Path,
+    template: str | Path | Mapping[str, Any],
+    *,
+    band_names: Sequence[str] | None = None,
+    nodata: float | int | None = cfg.NODATA,
+    dtype: str = "float32",
+    compress: str | None = "lzw",
+    **profile_updates: Any,
+) -> Path:
+    """Write a multi-band raster and optionally name its bands."""
+    import rasterio
+
+    array = np.asarray(data)
+    if array.ndim != 3:
+        raise ValueError(f"Expected a 3-D array, got shape {array.shape}")
+    if band_names is not None and len(band_names) != array.shape[0]:
+        raise ValueError(
+            f"Got {len(band_names)} band names for {array.shape[0]} bands"
+        )
+
+    grid = _coerce_grid(template)
+    out_path = Path(out_path)
+    make_folder(out_path.parent)
+
+    profile = grid["profile"].copy()
+    profile.update(
+        driver="GTiff",
+        count=int(array.shape[0]),
+        height=int(array.shape[1]),
+        width=int(array.shape[2]),
+        dtype=np.dtype(dtype).name,
+        nodata=nodata,
+        compress=compress,
+        BIGTIFF="IF_SAFER",
+    )
+    if compress is None:
+        profile.pop("compress", None)
+    profile.update(profile_updates)
+
+    with rasterio.open(out_path, "w", **profile) as dst:
+        dst.write(array.astype(dtype, copy=False))
+        if band_names is not None:
+            for index, name in enumerate(band_names, start=1):
+                dst.set_band_description(index, name)
+
+    return out_path
+
+
 def read_vector(path: str | Path, **kwargs: Any):
     """Read a vector layer as a GeoDataFrame."""
     import geopandas as gpd
@@ -720,6 +770,11 @@ def _coerce_grid(template: Any) -> dict[str, Any]:
     }
 
 
+def load_grid(template: Any = cfg.GRID_PATH) -> dict[str, Any]:
+    """Return the grid definition stored in a raster or mapping."""
+    return _coerce_grid(template)
+
+
 def build_grid(
     bounds: Sequence[float] | None = None,
     *,
@@ -804,6 +859,55 @@ def save_grid(grid: Mapping[str, Any], out_path: str | Path = cfg.GRID_PATH) -> 
     )
 
 
+def _grid_source_window(src: Any, grid: Mapping[str, Any]):
+    """Return the source window that fully covers the target grid."""
+    from rasterio.warp import transform_bounds
+    from rasterio.windows import Window, from_bounds
+
+    src_bounds = transform_bounds(
+        grid["crs"],
+        src.crs,
+        *grid["bounds"],
+        densify_pts=21,
+    )
+    window = from_bounds(*src_bounds, transform=src.transform)
+
+    col_off = max(0, int(np.floor(window.col_off)))
+    row_off = max(0, int(np.floor(window.row_off)))
+    col_end = min(src.width, int(np.ceil(window.col_off + window.width)))
+    row_end = min(src.height, int(np.ceil(window.row_off + window.height)))
+    window = Window(
+        col_off,
+        row_off,
+        col_end - col_off,
+        row_end - row_off,
+    )
+    if window.width <= 0 or window.height <= 0:
+        raise ValueError(f"Raster {src.name} does not overlap the grid")
+    return window
+
+
+def read_raster_window(
+    src_path: str | Path,
+    template: Any = cfg.GRID_PATH,
+    *,
+    band: int = 1,
+) -> tuple[np.ndarray, Any, Any, float | int | None]:
+    """Read the source window that covers the target grid."""
+    import rasterio
+
+    grid = _coerce_grid(template)
+    with rasterio.open(src_path) as src:
+        if src.crs is None:
+            raise ValueError(f"Raster {src_path} has no CRS")
+        window = _grid_source_window(src, grid)
+        data = src.read(band, window=window)
+        transform = src.window_transform(window)
+        crs = src.crs
+        nodata = src.nodata
+    return data, transform, crs, nodata
+
+
 def align_raster(
     src_path: str | Path,
     template: Any = cfg.GRID_PATH,
@@ -824,27 +928,14 @@ def align_raster(
     """
     import rasterio
     from rasterio.enums import Resampling
-    from rasterio.warp import reproject, transform_bounds
-    from rasterio.windows import Window, from_bounds
+    from rasterio.warp import reproject
 
     grid = _coerce_grid(template)
 
     with rasterio.open(src_path) as src:
         if src.crs is None:
             raise ValueError(f"Raster {src_path} has no CRS")
-
-        src_bounds = transform_bounds(
-            grid["crs"],
-            src.crs,
-            *grid["bounds"],
-            densify_pts=21,
-        )
-        window = from_bounds(*src_bounds, transform=src.transform)
-        window = window.round_offsets().round_lengths()
-        window = window.intersection(Window(0, 0, src.width, src.height))
-        if window.width <= 0 or window.height <= 0:
-            raise ValueError(f"Raster {src_path} does not overlap the grid")
-
+        window = _grid_source_window(src, grid)
         source = src.read(band, window=window)
         src_transform = src.window_transform(window)
         src_crs = src.crs
@@ -940,6 +1031,164 @@ def align_raster(
     return destination, profile
 
 
+def reproject_array(
+    source: np.ndarray,
+    src_transform: Any,
+    src_crs: Any,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    method: str | Any = "nearest",
+    src_nodata: float | int | None = None,
+    dst_nodata: float | int | None = cfg.NODATA,
+    dtype: str | None = None,
+    fill: float | int | None = None,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Reproject an in-memory array onto a grid defined by ``template``."""
+    import rasterio
+    from rasterio.enums import Resampling
+    from rasterio.warp import reproject
+
+    grid = _coerce_grid(template)
+    array = np.asarray(source)
+    dst_dtype = np.dtype(dtype or array.dtype)
+    resampling = (
+        Resampling[method.lower()] if isinstance(method, str) else method
+    )
+
+    if fill is None:
+        fill = dst_nodata if dst_nodata is not None else 0
+    destination = np.full(
+        (grid["height"], grid["width"]),
+        fill,
+        dtype=dst_dtype,
+    )
+
+    reproject(
+        source=array,
+        destination=destination,
+        src_transform=src_transform,
+        src_crs=src_crs,
+        src_nodata=src_nodata,
+        dst_transform=grid["transform"],
+        dst_crs=grid["crs"],
+        dst_nodata=dst_nodata,
+        resampling=resampling,
+    )
+
+    profile = grid["profile"].copy()
+    profile.update(
+        dtype=dst_dtype.name,
+        count=1,
+        nodata=dst_nodata,
+    )
+
+    if out_path is not None:
+        write_raster(
+            destination,
+            out_path,
+            profile,
+            nodata=dst_nodata,
+            dtype=dst_dtype.name,
+        )
+
+    return destination, profile
+
+
+def population_to_grid(
+    counts: np.ndarray,
+    src_transform: Any,
+    src_crs: Any,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    source_nodata: float | int | None = None,
+    district_geometry: Any | None = None,
+    district_mask: np.ndarray | None = None,
+    source_cell_area_m2: float = cfg.POPULATION_SOURCE_CELL_AREA_M2,
+    target_cell_area_m2: float = cfg.POPULATION_TARGET_CELL_AREA_M2,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Convert count cells to density, resample, and restore the district total.
+
+    ``district_geometry`` must be in the source CRS.  ``district_mask`` is a
+    boolean mask on the target grid.
+    """
+    from rasterio.features import geometry_mask
+    from shapely.geometry import mapping
+
+    array = np.asarray(counts)
+    valid = valid_mask(array, source_nodata)
+    density = np.where(valid, array / source_cell_area_m2, np.nan).astype(
+        "float32"
+    )
+
+    density_grid, _ = reproject_array(
+        density,
+        src_transform,
+        src_crs,
+        template,
+        method="average",
+        src_nodata=np.nan,
+        dst_nodata=cfg.NODATA,
+        dtype="float32",
+    )
+    target = np.where(
+        density_grid == cfg.NODATA,
+        cfg.NODATA,
+        density_grid * target_cell_area_m2,
+    ).astype("float32")
+
+    if district_geometry is not None:
+        source_inside = geometry_mask(
+            [mapping(district_geometry)],
+            out_shape=array.shape,
+            transform=src_transform,
+            invert=True,
+            all_touched=False,
+        )
+        source_selection = valid & source_inside
+    else:
+        source_selection = valid
+    source_total = float(array[source_selection].sum())
+
+    target_valid = target != cfg.NODATA
+    if district_mask is not None:
+        target_selection = target_valid & np.asarray(district_mask, dtype=bool)
+    else:
+        target_selection = target_valid
+    target_before = float(target[target_selection].sum())
+
+    scale = source_total / target_before if target_before > 0 else 0.0
+    if scale > 0:
+        target = np.where(target_valid, target * scale, target).astype("float32")
+
+    target_after = float(target[target_selection].sum())
+    relative = (
+        (target_after - source_total) / source_total if source_total else 0.0
+    )
+    stats = {
+        "source_total": source_total,
+        "target_before_rescale": target_before,
+        "target_after_rescale": target_after,
+        "scale": scale,
+        "relative_error": relative,
+    }
+
+    if out_path is not None:
+        grid = _coerce_grid(template)
+        profile = grid["profile"].copy()
+        profile.update(dtype="float32", count=1, nodata=cfg.NODATA)
+        write_raster(
+            target,
+            out_path,
+            profile,
+            nodata=cfg.NODATA,
+            dtype="float32",
+        )
+
+    return target, stats
+
+
 def rasterize_vector(
     vector: Any,
     template: Any = cfg.GRID_PATH,
@@ -1007,6 +1256,49 @@ def _safe_nodata(dtype: Any, value: float | int | None) -> float | int | None:
     if info.min <= value <= info.max:
         return value
     return int(info.max) if np.issubdtype(dtype, np.unsignedinteger) else int(info.min)
+
+
+def valid_area_m2(
+    data: np.ndarray,
+    transform: Any,
+    crs: Any,
+    *,
+    valid: np.ndarray | None = None,
+) -> float:
+    """Return the ground area of valid cells in square metres."""
+    from pyproj import CRS, Geod
+
+    array = np.asarray(data)
+    if valid is None:
+        valid = valid_mask(array)
+    else:
+        valid = np.asarray(valid, dtype=bool)
+        if valid.shape != array.shape:
+            raise ValueError(
+                f"Mask shape {valid.shape} does not match data shape {array.shape}"
+            )
+
+    crs = CRS.from_user_input(crs)
+    if crs.is_geographic:
+        geod = Geod(ellps="WGS84")
+        total = 0.0
+        for row in range(array.shape[0]):
+            count = int(valid[row].sum())
+            if count == 0:
+                continue
+            x0 = transform.c
+            y0 = transform.f + row * transform.e
+            x1 = x0 + transform.a
+            y1 = y0 + transform.e
+            area, _ = geod.polygon_area_perimeter(
+                [x0, x1, x1, x0],
+                [y0, y0, y1, y1],
+            )
+            total += abs(area) * count
+        return total
+
+    pixel_area = abs(transform.a * transform.e - transform.b * transform.d)
+    return float(valid.sum()) * pixel_area
 
 
 def nodata_to_nan(

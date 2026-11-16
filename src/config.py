@@ -160,8 +160,9 @@ CRS_WORKING = "EPSG:32643"  # UTM zone 43N
 # ---------------------------------------------------------------------------
 
 GRID_RESOLUTION = 90  # metres
+DEM_30M_RESOLUTION = 30  # optional full-detail DEM
 DISTRICT_BUFFER_M = 1000  # metres around the district boundary
-GRID_PATH = PROCESSED_DIR / f"grid_{DISTRICT_NAME.lower()}_{GRID_RESOLUTION}m.tif"
+GRID_PATH = PROCESSED_DIR / "grid_template.tif"
 
 
 # ---------------------------------------------------------------------------
@@ -206,6 +207,10 @@ BUILDINGS_CHUNK_SIZE = 250_000
 # reference for the 2018 gridded population layer.
 ALAPPUZHA_POPULATION_2011 = 2_127_789
 
+# Population counts are stored per 100 m source cell; the common grid is 90 m.
+POPULATION_SOURCE_CELL_AREA_M2 = 10_000.0
+POPULATION_TARGET_CELL_AREA_M2 = float(GRID_RESOLUTION**2)
+
 RANDOM_SEED = 42
 
 PATCH_SIZE = 64
@@ -242,6 +247,18 @@ ESA_WORLDCOVER_CLASSES = {
     100: "Moss and lichen",
 }
 
+# Key fractions saved separately for modelling; the remaining classes are
+# stored as an "other" fraction so that every valid cell sums to one.
+LANDCOVER_KEY_CLASSES = {
+    "trees": 10,
+    "cropland": 40,
+    "builtup": 50,
+    "water": 80,
+    "wetland": 90,
+    "mangrove": 95,
+}
+LANDCOVER_CLASS_VALUES = tuple(sorted(ESA_WORLDCOVER_CLASSES))
+
 
 # ---------------------------------------------------------------------------
 # Output file names: every script must use these
@@ -266,17 +283,30 @@ OUTPUT_FILES = {
     "clip_stats": TABLES_DIR / "01_clip_stats.json",
     # Aligned 90 m grid
     "grid": GRID_PATH,
+    "district_mask": PROCESSED_DIR / "district_mask.tif",
     "dem_grid": PROCESSED_DIR / "dem_90m.tif",
-    "landcover_grid": PROCESSED_DIR / "landcover_90m.tif",
-    "ksdma_grid": PROCESSED_DIR / f"ksdma_{SCENARIO_NAME}_90m.tif",
-    "flood2018_grid": PROCESSED_DIR / "flood_2018_90m.tif",
-    "population_grid": PROCESSED_DIR / "population_2018_90m.tif",
+    "landcover_mode": PROCESSED_DIR / "landcover_mode.tif",
+    "landcover_frac": PROCESSED_DIR / "landcover_frac.tif",
+    "ksdma_100yr_90m": PROCESSED_DIR / "ksdma_100yr_90m.tif",
+    "ksdma_modelled_mask": KSDMA_MASK_PATH,
+    "flood2018_frac": PROCESSED_DIR / "flood2018_frac.tif",
+    "flood2018_bin": PROCESSED_DIR / "flood2018_bin.tif",
+    "pop2018_90m": PROCESSED_DIR / "pop2018_90m.tif",
+    "dem_30m": PROCESSED_DIR / "dem_30m.tif",
+    # Aliases retained for later tasks
+    "landcover_grid": PROCESSED_DIR / "landcover_mode.tif",
+    "ksdma_grid": PROCESSED_DIR / "ksdma_100yr_90m.tif",
+    "flood2018_grid": PROCESSED_DIR / "flood2018_bin.tif",
+    "population_grid": PROCESSED_DIR / "pop2018_90m.tif",
+    "ksdma_mask": KSDMA_MASK_PATH,
     "builtup_grid": PROCESSED_DIR / "builtup_90m.tif",
     "roads_grid": PROCESSED_DIR / "roads_90m.tif",
     "waterways_grid": PROCESSED_DIR / "waterways_90m.tif",
     "distance_roads_grid": PROCESSED_DIR / "distance_to_roads_90m.tif",
     "distance_waterways_grid": PROCESSED_DIR / "distance_to_waterways_90m.tif",
-    "ksdma_mask": KSDMA_MASK_PATH,
+    # Task 3 inspection outputs
+    "aligned_overview": FIGURES_DIR / "02_aligned_overview.png",
+    "alignment_stats": TABLES_DIR / "02_alignment_stats.json",
     # Later modelling outputs
     "feature_stack": PROCESSED_DIR / "feature_stack.npz",
     "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
