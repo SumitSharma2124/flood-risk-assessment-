@@ -146,6 +146,210 @@ def read_vector(path: str | Path, **kwargs: Any):
     return gpd.read_file(path, **kwargs)
 
 
+def list_gpkg_layers(path: str | Path) -> list[tuple[str, str]]:
+    """Return ``(layer_name, geometry_type)`` pairs from a GeoPackage."""
+    import pyogrio
+
+    layers = pyogrio.list_layers(path)
+    return [(str(name), str(geometry_type)) for name, geometry_type in layers]
+
+
+def filter_bbox(
+    gdf: Any,
+    bounds: Sequence[float],
+    *,
+    crs: Any | None = None,
+):
+    """Keep features whose geometry intersects a ``(minx, miny, maxx, maxy)`` box."""
+    if crs is not None and gdf.crs is not None and crs != gdf.crs:
+        from rasterio.warp import transform_bounds
+
+        bounds = transform_bounds(crs, gdf.crs, *bounds, densify_pts=21)
+
+    minx, miny, maxx, maxy = (float(value) for value in bounds)
+    return gdf.cx[minx:maxx, miny:maxy]
+
+
+def iter_buildings_csv(
+    path: str | Path = cfg.BUILDINGS_RAW,
+    *,
+    bounds: Sequence[float] | None = None,
+    chunksize: int = cfg.BUILDINGS_CHUNK_SIZE,
+    confidence_threshold: float | None = None,
+    usecols: Sequence[str] | None = None,
+    lat_col: str = cfg.BUILDINGS_LAT_COLUMN,
+    lon_col: str = cfg.BUILDINGS_LON_COLUMN,
+    **read_csv_kwargs: Any,
+):
+    """Yield chunks of the buildings CSV, optionally filtered by bounding box.
+
+    The CSV is never loaded in full.  ``bounds`` must be in EPSG:4326 and is
+    applied to the latitude/longitude columns before geometry is parsed.
+    """
+    import pandas as pd
+
+    if usecols is None:
+        usecols = [
+            lat_col,
+            lon_col,
+            "area_in_meters",
+            "confidence",
+            cfg.BUILDINGS_GEOMETRY_COLUMN,
+            "full_plus_code",
+        ]
+
+    for chunk in pd.read_csv(
+        path,
+        chunksize=chunksize,
+        usecols=list(usecols),
+        **read_csv_kwargs,
+    ):
+        if bounds is not None:
+            minx, miny, maxx, maxy = (float(value) for value in bounds)
+            chunk = chunk[
+                (chunk[lon_col] >= minx)
+                & (chunk[lon_col] <= maxx)
+                & (chunk[lat_col] >= miny)
+                & (chunk[lat_col] <= maxy)
+            ]
+
+        if (
+            confidence_threshold is not None
+            and "confidence" in chunk.columns
+        ):
+            chunk = chunk[chunk["confidence"] >= confidence_threshold]
+
+        if not chunk.empty:
+            yield chunk
+
+
+def read_buildings_csv(
+    path: str | Path = cfg.BUILDINGS_RAW,
+    *,
+    bounds: Sequence[float] | None = None,
+    chunksize: int = cfg.BUILDINGS_CHUNK_SIZE,
+    confidence_threshold: float | None = None,
+    usecols: Sequence[str] | None = None,
+    lat_col: str = cfg.BUILDINGS_LAT_COLUMN,
+    lon_col: str = cfg.BUILDINGS_LON_COLUMN,
+    geometry_col: str = cfg.BUILDINGS_GEOMETRY_COLUMN,
+    crs: Any = cfg.CRS_GEOGRAPHIC,
+    clip_geometry: Any | None = None,
+    counts: dict[str, int] | None = None,
+    progress_every: int = 10,
+    logger: logging.Logger | None = None,
+    **read_csv_kwargs: Any,
+) -> tuple[Any, int]:
+    """Read buildings from the CSV in chunks and return ``(gdf, total_rows)``.
+
+    Only rows inside ``bounds`` are converted from WKT to polygons, which keeps
+    memory use low for the 4 GB, Kerala-wide source file.  If ``clip_geometry``
+    is given (in the same CRS as the CSV coordinates), only buildings that
+    intersect it are kept before the WKT is parsed.
+    """
+    import geopandas as gpd
+    import pandas as pd
+    import shapely
+
+    if usecols is None:
+        usecols = [
+            lat_col,
+            lon_col,
+            "area_in_meters",
+            "confidence",
+            geometry_col,
+            "full_plus_code",
+        ]
+
+    frames: list[Any] = []
+    total_rows = 0
+    bbox_rows = 0
+    clip_rows = 0
+    chunk_number = 0
+
+    for chunk in pd.read_csv(
+        path,
+        chunksize=chunksize,
+        usecols=list(usecols),
+        **read_csv_kwargs,
+    ):
+        chunk_number += 1
+        total_rows += len(chunk)
+
+        if bounds is not None:
+            minx, miny, maxx, maxy = (float(value) for value in bounds)
+            chunk = chunk[
+                (chunk[lon_col] >= minx)
+                & (chunk[lon_col] <= maxx)
+                & (chunk[lat_col] >= miny)
+                & (chunk[lat_col] <= maxy)
+            ]
+
+        if (
+            confidence_threshold is not None
+            and "confidence" in chunk.columns
+        ):
+            chunk = chunk[chunk["confidence"] >= confidence_threshold]
+
+        bbox_rows += len(chunk)
+
+        if not chunk.empty:
+            geometries = shapely.from_wkt(chunk[geometry_col].to_numpy())
+            if clip_geometry is not None:
+                keep = shapely.intersects(geometries, clip_geometry)
+                clip_rows += int(keep.sum())
+                if not np.all(keep):
+                    chunk = chunk.loc[keep].reset_index(drop=True)
+                    geometries = geometries[keep]
+            else:
+                clip_rows += len(chunk)
+
+            if not chunk.empty:
+                frame = chunk.drop(columns=[geometry_col], errors="ignore").copy()
+                frame["geometry"] = geometries
+                frames.append(frame)
+
+        if logger is not None and progress_every and chunk_number % progress_every == 0:
+            logger.info(
+                "Buildings CSV: %s rows read, %s in bbox, %s kept so far",
+                f"{total_rows:,}",
+                f"{bbox_rows:,}",
+                f"{sum(len(frame) for frame in frames):,}",
+            )
+
+    if counts is not None:
+        counts.update(
+            {
+                "csv_rows": total_rows,
+                "bbox_rows": bbox_rows,
+                "clip_rows": clip_rows,
+            }
+        )
+
+    if not frames:
+        empty = gpd.GeoDataFrame(
+            {
+                lat_col: pd.Series(dtype="float64"),
+                lon_col: pd.Series(dtype="float64"),
+                "geometry": gpd.GeoSeries([], dtype="geometry"),
+            },
+            geometry="geometry",
+            crs=crs,
+        )
+        return empty, total_rows
+
+    combined = pd.concat(frames, ignore_index=True)
+    geometries = combined["geometry"].to_numpy()
+    valid = ~shapely.is_missing(geometries) & ~shapely.is_empty(geometries)
+    if not np.all(valid):
+        combined = combined.loc[valid].reset_index(drop=True)
+        geometries = geometries[valid]
+
+    combined = combined.drop(columns=["geometry"], errors="ignore")
+    gdf = gpd.GeoDataFrame(combined, geometry=geometries, crs=crs)
+    return gdf, total_rows
+
+
 def write_vector(
     gdf: Any,
     out_path: str | Path,
@@ -264,6 +468,30 @@ def _buffer_geometry(geom: Any, crs: Any, buffer_m: float) -> tuple[Any, Any]:
     transformer = Transformer.from_crs(crs, cfg.CRS_WORKING, always_xy=True)
     geom_working = shapely_transform(transformer.transform, geom)
     return geom_working.buffer(buffer_m), cfg.CRS_WORKING
+
+
+def buffer_geometry(
+    geometry: Any,
+    buffer_m: float = cfg.DISTRICT_BUFFER_M,
+    *,
+    crs: Any = cfg.CRS_WORKING,
+) -> Any:
+    """Buffer a geometry by metres and return it in the working CRS.
+
+    Accepts a shapely geometry, GeoDataFrame, GeoSeries or vector path.
+    """
+    from pyproj import CRS, Transformer
+    from shapely.ops import transform as shapely_transform
+
+    geom, geom_crs = _as_geometry_and_crs(geometry)
+    if geom_crs is None:
+        geom_crs = crs
+
+    if CRS.from_user_input(geom_crs) != CRS.from_user_input(crs):
+        transformer = Transformer.from_crs(geom_crs, crs, always_xy=True)
+        geom = shapely_transform(transformer.transform, geom)
+
+    return geom.buffer(buffer_m)
 
 
 # ---------------------------------------------------------------------------
@@ -392,6 +620,61 @@ def clip_vector_to_polygon(
         write_vector(clipped, out_path)
 
     return clipped
+
+
+def clip_raster_to_bounds(
+    src_path: str | Path,
+    bounds: Sequence[float],
+    out_path: str | Path | None = None,
+    *,
+    crs: Any | None = None,
+    band: int = 1,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Crop a raster to a bounding box without masking by a polygon.
+
+    Only the window covering ``bounds`` is read.  The source data type and
+    NoData value are preserved.  ``bounds`` are assumed to be in the source
+    CRS unless ``crs`` is given, in which case they are transformed first.
+    """
+    import rasterio
+    from rasterio.warp import transform_bounds
+    from rasterio.windows import Window, from_bounds
+
+    with rasterio.open(src_path) as src:
+        if crs is not None and src.crs is not None and crs != src.crs:
+            bounds = transform_bounds(crs, src.crs, *bounds, densify_pts=21)
+
+        window = from_bounds(*bounds, transform=src.transform)
+        window = window.round_offsets().round_lengths()
+        window = window.intersection(Window(0, 0, src.width, src.height))
+        if window.width <= 0 or window.height <= 0:
+            raise ValueError(
+                f"Bounding box does not overlap raster {src_path} "
+                f"(bounds {tuple(src.bounds)})"
+            )
+
+        data = src.read(band, window=window)
+        profile = src.profile.copy()
+        profile.update(
+            driver="GTiff",
+            count=1,
+            height=data.shape[0],
+            width=data.shape[1],
+            transform=src.window_transform(window),
+            compress="lzw",
+            BIGTIFF="IF_SAFER",
+        )
+
+    if out_path is not None:
+        write_raster(
+            data,
+            out_path,
+            profile,
+            nodata=profile.get("nodata"),
+            compress="lzw",
+        )
+
+    return data, profile
 
 
 # ---------------------------------------------------------------------------

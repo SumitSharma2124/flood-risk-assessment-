@@ -5,7 +5,7 @@ teammates work on the same projection, grid and output files.
 
 Run scripts from the project root, for example::
 
-    python -m src.01_clip_layers
+    python src/01_clip_layers.py
 """
 
 from __future__ import annotations
@@ -196,6 +196,16 @@ KSDMA_MASK_PATH = PROCESSED_DIR / KSDMA_MASK_NAME
 BUILDING_CONFIDENCE_THRESHOLD = 0.7
 FLOOD_MASK_THRESHOLD = 0.5
 
+# Columns in the Google Open Buildings CSV.
+BUILDINGS_LAT_COLUMN = "latitude"
+BUILDINGS_LON_COLUMN = "longitude"
+BUILDINGS_GEOMETRY_COLUMN = "geometry"
+BUILDINGS_CHUNK_SIZE = 250_000
+
+# 2011 Census population of Alappuzha district, used as the sanity-check
+# reference for the 2018 gridded population layer.
+ALAPPUZHA_POPULATION_2011 = 2_127_789
+
 RANDOM_SEED = 42
 
 PATCH_SIZE = 64
@@ -238,17 +248,22 @@ ESA_WORLDCOVER_CLASSES = {
 # ---------------------------------------------------------------------------
 
 OUTPUT_FILES = {
-    # Interim clipped layers
-    "district": INTERIM_DIR / f"district_{DISTRICT_NAME.lower()}.gpkg",
-    "dem_interim": INTERIM_DIR / "dem_alappuzha.tif",
-    "landcover_interim": INTERIM_DIR / "landcover_alappuzha.tif",
-    "ksdma_interim": INTERIM_DIR / f"ksdma_{SCENARIO_NAME}_alappuzha.tif",
-    "flood2018_interim": INTERIM_DIR / "flood_2018_alappuzha.tif",
-    "population_interim": INTERIM_DIR / "population_2018_alappuzha.tif",
-    "roads_interim": INTERIM_DIR / "roads_alappuzha.gpkg",
-    "waterways_interim": INTERIM_DIR / "waterways_alappuzha.gpkg",
-    "buildings_interim": INTERIM_DIR / "buildings_alappuzha.gpkg",
-    "facilities_interim": INTERIM_DIR / "critical_facilities_alappuzha.gpkg",
+    # Interim clipped layers (Task 2)
+    "district": INTERIM_DIR / "district.gpkg",
+    "dem_clip": INTERIM_DIR / "dem_clip.tif",
+    "landcover_clip": INTERIM_DIR / "landcover_clip.tif",
+    "ksdma_100yr_clip": INTERIM_DIR / "ksdma_100yr_clip.tif",
+    "flood2018_clip": INTERIM_DIR / "flood2018_clip.tif",
+    "pop2018_clip": INTERIM_DIR / "pop2018_clip.tif",
+    "roads_clip": INTERIM_DIR / "roads_clip.gpkg",
+    "waterways_clip": INTERIM_DIR / "waterways_clip.gpkg",
+    "buildings_clip": INTERIM_DIR / "buildings_clip.gpkg",
+    "facilities_clip": INTERIM_DIR / "facilities_clip.gpkg",
+    "villages_clip": INTERIM_DIR / "villages_clip.gpkg",
+    # Task 2 inspection outputs
+    "layer_summary": TABLES_DIR / "01_layer_summary.csv",
+    "layers_overview": FIGURES_DIR / "01_layers_overview.png",
+    "clip_stats": TABLES_DIR / "01_clip_stats.json",
     # Aligned 90 m grid
     "grid": GRID_PATH,
     "dem_grid": PROCESSED_DIR / "dem_90m.tif",
