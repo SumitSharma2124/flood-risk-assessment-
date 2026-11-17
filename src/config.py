@@ -145,9 +145,79 @@ CAMPS_RAW = (
 
 CENSUS_DIR = RAW_DIR / "census_2011_vulnerability_indicators"
 
-# Filled in Task 6. Alappuzha is district code 11, so look for the "3211"
-# files first. Example: {"population": CENSUS_DIR / "PCA_CDB-3211-F-Census.xlsx"}
-CENSUS_FILES: dict[str, Path] = {}
+# Task 6 Census 2011 inputs. Alappuzha is district code 598 in these files
+# (state 32); the "3211" in the file names is a legacy file code.
+CENSUS_FILES: dict[str, Path] = {
+    "pca": CENSUS_DIR / "DDW_PCA3211_2011_MDDS with UI.xlsx",
+    "pca_sc": CENSUS_DIR / "PCA_SC3211_2011_MDDS_DDW.xlsx",
+    "pca_st": CENSUS_DIR / "PCA_ST3211_2011_MDDS_DDW.xlsx",
+    "hlpca": CENSUS_DIR / "HLPCA-32598-2011_H14_census.xlsx",
+}
+
+# The HLPCA files are split by district: 32597=Kottayam, 32598=Alappuzha,
+# 32599=Pathanamthitta. Verify the district name inside before using one.
+CENSUS_HLPCA_CANDIDATES = (
+    CENSUS_DIR / "HLPCA-32597-2011_H14_census.xlsx",
+    CENSUS_DIR / "HLPCA-32598-2011_H14_census.xlsx",
+    CENSUS_DIR / "HLPCA-32599-2011_H14_census.xlsx",
+)
+CENSUS_STATE_CODE = 32
+CENSUS_DISTRICT_CODE = 598
+CENSUS_HLPCA_DATA_START_ROW = 7
+CENSUS_LOCAL_LEVELS = ("VILLAGE", "TOWN", "WARD")
+CENSUS_AREA_LEVELS = ("VILLAGE", "TOWN")
+CENSUS_HLPCA_COLUMNS = {
+    "no_latrine_pct": 99,
+    "temporary_structure_pct": 141,
+}
+
+# Task 6 vulnerability indicators. All directions are +1 because higher values
+# mean greater vulnerability. The score is relative within Alappuzha.
+VULNERABILITY_INDICATORS = {
+    "child_share": {
+        "label": "Children aged 0-6 share",
+        "definition": "P_06 / TOT_P",
+        "direction": 1,
+    },
+    "scst_share": {
+        "label": "Scheduled caste and scheduled tribe share",
+        "definition": "(P_SC + P_ST) / TOT_P",
+        "direction": 1,
+    },
+    "worker_fragility": {
+        "label": "Marginal or non-worker share",
+        "definition": "(MARGWORK_P + NON_WORK_P) / TOT_P",
+        "direction": 1,
+    },
+    "housing_deprivation": {
+        "label": "Housing deprivation",
+        "definition": (
+            "mean(no latrine within premises, temporary structure), HLPCA"
+        ),
+        "direction": 1,
+    },
+}
+VULNERABILITY_WEIGHTS = {
+    "child_share": 0.25,
+    "scst_share": 0.25,
+    "worker_fragility": 0.25,
+    "housing_deprivation": 0.25,
+}
+VULNERABILITY_WEIGHT_SETS = {
+    "equal": VULNERABILITY_WEIGHTS,
+    "housing_heavy": {
+        "child_share": 0.20,
+        "scst_share": 0.20,
+        "worker_fragility": 0.20,
+        "housing_deprivation": 0.40,
+    },
+}
+VULNERABILITY_FILL_METHOD = "subdistrict_median"
+VULNERABILITY_MIN_MATCHED_VILLAGE_SHARE = 0.90
+VULNERABILITY_MIN_MATCHED_POPULATION_SHARE = 0.90
+VULNERABILITY_MAX_MISSING_SHARE = 0.10
+VULNERABILITY_MIN_WEIGHT_SPEARMAN = 0.80
+VULNERABILITY_MIN_NEIGHBOUR_CORRELATION = 0.30
 
 
 # ---------------------------------------------------------------------------
@@ -425,6 +495,16 @@ OUTPUT_FILES = {
     "exposure_combine_stats": TABLES_DIR / "04_exposure_combine_stats.json",
     "exposure_summary": TABLES_DIR / "04_exposure_summary.csv",
     "exposure_overview": FIGURES_DIR / "04_exposure_overview.png",
+    # Vulnerability layers (Task 6)
+    "census_clean": INTERIM_DIR / "census_clean.csv",
+    "villages_vuln": PROCESSED_DIR / "villages_vuln.gpkg",
+    "vulnerability_score": PROCESSED_DIR / "vulnerability_score.tif",
+    "join_report": TABLES_DIR / "05_join_report.csv",
+    "join_stats": TABLES_DIR / "05_join_stats.json",
+    "census_stats": TABLES_DIR / "05_census_stats.json",
+    "vulnerability_summary": TABLES_DIR / "05_vulnerability_summary.csv",
+    "vulnerability_stats": TABLES_DIR / "05_vulnerability_stats.json",
+    "vulnerability_overview": FIGURES_DIR / "05_vulnerability_overview.png",
     # Later modelling outputs
     "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
     "model": MODELS_DIR / "flood_risk_model.pt",
@@ -460,6 +540,10 @@ RAW_INPUTS = {
     "villages": VILLAGES_RAW,
     "village_code_mapping": VILLAGE_CODE_MAPPING_RAW,
     "camps": CAMPS_RAW,
+    "census_pca": CENSUS_FILES["pca"],
+    "census_pca_sc": CENSUS_FILES["pca_sc"],
+    "census_pca_st": CENSUS_FILES["pca_st"],
+    "census_hlpca": CENSUS_FILES["hlpca"],
 }
 
 

@@ -1310,6 +1310,117 @@ def rasterize_vector(
     return result, profile
 
 
+def village_to_grid(
+    villages: Any,
+    values: Any | str = "vulnerability_score",
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    fill_value: float | None = None,
+    fill_mask: np.ndarray | None = None,
+    domain_mask: np.ndarray | None = None,
+    nodata: float = cfg.NODATA,
+    dtype: str = "float32",
+    all_touched: bool = False,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Rasterise one value per village polygon onto the common grid.
+
+    Cells without a village keep ``nodata`` unless ``fill_value`` is given. If
+    ``fill_mask`` is also given, only cells inside that mask are filled (for
+    example, district cells without a village). ``domain_mask`` sets all cells
+    outside the study domain to ``nodata`` before cell statistics are computed.
+    """
+    import geopandas as gpd
+    import rasterio.features
+
+    if isinstance(villages, (str, Path)):
+        gdf = read_vector(villages)
+    elif isinstance(villages, gpd.GeoDataFrame):
+        gdf = villages.copy()
+    else:
+        raise TypeError("village_to_grid expects a GeoDataFrame or path")
+
+    grid = _coerce_grid(template)
+    if gdf.crs is not None and gdf.crs != grid["crs"]:
+        gdf = gdf.to_crs(grid["crs"])
+
+    if isinstance(values, str):
+        if values not in gdf.columns:
+            raise KeyError(f"Column '{values}' not found in village layer")
+        burn_values = gdf[values].to_numpy(dtype="float64")
+    else:
+        burn_values = np.asarray(values, dtype="float64")
+    if burn_values.shape != (len(gdf),):
+        raise ValueError("values must contain one number per village polygon")
+
+    valid_geometry = gdf.geometry.notna() & ~gdf.geometry.is_empty
+    keep = valid_geometry.to_numpy() & np.isfinite(burn_values)
+    dropped = int((~keep).sum())
+    gdf = gdf.loc[keep].copy()
+    burn_values = burn_values[keep]
+
+    shapes = list(zip(gdf.geometry, burn_values))
+    result = rasterio.features.rasterize(
+        shapes=shapes,
+        out_shape=(grid["height"], grid["width"]),
+        transform=grid["transform"],
+        fill=float(nodata),
+        all_touched=all_touched,
+        dtype=dtype,
+    )
+    outside_domain = 0
+    if domain_mask is not None:
+        domain = np.asarray(domain_mask, dtype=bool)
+        if domain.shape != result.shape:
+            raise ValueError("domain_mask must have the same shape as the grid")
+        outside_domain = int((~domain & (result != nodata)).sum())
+        result[~domain] = nodata
+
+    covered = result != np.asarray(nodata, dtype=result.dtype)
+
+    raw = result[covered]
+    stats: dict[str, Any] = {
+        "polygons": int(len(gdf) + dropped),
+        "polygons_rasterized": int(len(gdf)),
+        "dropped_polygons": dropped,
+        "cells_covered": int(covered.sum()),
+        "cells_filled": 0,
+        "cells_outside_domain_masked": outside_domain,
+        "fill_value": None,
+        "min_raw": float(raw.min()) if raw.size else None,
+        "max_raw": float(raw.max()) if raw.size else None,
+        "mean_raw": float(raw.mean()) if raw.size else None,
+    }
+
+    if fill_value is not None:
+        target = ~covered
+        if fill_mask is not None:
+            mask = np.asarray(fill_mask, dtype=bool)
+            if mask.shape != result.shape:
+                raise ValueError("fill_mask must have the same shape as the grid")
+            target &= mask
+        result[target] = fill_value
+        stats["cells_filled"] = int(target.sum())
+        stats["fill_value"] = float(fill_value)
+
+    profile = grid["profile"].copy()
+    profile.update(
+        dtype=np.dtype(dtype).name,
+        count=1,
+        nodata=np.asarray(nodata, dtype=dtype).item(),
+    )
+    if out_path is not None:
+        write_raster(
+            result,
+            out_path,
+            profile,
+            nodata=nodata,
+            dtype=dtype,
+        )
+
+    return result, stats
+
+
 def rasterize_streams(
     waterways: Any,
     template: Any = cfg.GRID_PATH,
@@ -1660,6 +1771,70 @@ def robust_scale(
         "mean": float(out[domain].mean()),
     }
     return out, info
+
+
+def percentile_rank(
+    values: Any,
+    *,
+    valid_mask: np.ndarray | None = None,
+    direction: int = 1,
+    nodata: float = np.nan,
+    dtype: str = "float64",
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Scale one-dimensional values to 0-1 percentile ranks.
+
+    Ties receive their average rank. ``direction=-1`` reverses the scale so
+    that lower raw values become more vulnerable.
+    """
+    from scipy.stats import rankdata
+
+    data = np.asarray(values, dtype="float64")
+    if data.ndim != 1:
+        raise ValueError(f"Expected a 1-D array, got shape {data.shape}")
+    if direction not in (-1, 1):
+        raise ValueError("direction must be 1 or -1")
+
+    finite = np.isfinite(data)
+    if valid_mask is not None:
+        mask = np.asarray(valid_mask, dtype=bool)
+        if mask.shape != data.shape:
+            raise ValueError("valid_mask must have the same shape as values")
+        finite &= mask
+
+    n_valid = int(finite.sum())
+    out = np.full(data.shape, nodata, dtype="float64")
+    if n_valid == 0:
+        return out.astype(dtype), {
+            "method": "percentile_rank",
+            "direction": int(direction),
+            "valid_values": 0,
+            "missing_values": int(data.size),
+            "constant": None,
+            "min": None,
+            "max": None,
+            "mean": None,
+        }
+
+    ranks = rankdata(data[finite], method="average")
+    if n_valid == 1:
+        scaled = np.full(1, 0.5, dtype="float64")
+    else:
+        scaled = (ranks - 1.0) / (n_valid - 1.0)
+    if direction < 0:
+        scaled = 1.0 - scaled
+
+    out[finite] = scaled
+    selected = data[finite]
+    return out.astype(dtype), {
+        "method": "percentile_rank",
+        "direction": int(direction),
+        "valid_values": n_valid,
+        "missing_values": int(data.size - n_valid),
+        "constant": bool(np.unique(selected).size <= 1),
+        "min": float(out[finite].min()),
+        "max": float(out[finite].max()),
+        "mean": float(out[finite].mean()),
+    }
 
 
 def smooth_raster(

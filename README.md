@@ -29,7 +29,10 @@ flood_risk/
 |   |-- 04_exposure_population.py   # Task 5: population exposure
 |   |-- 04_exposure_buildings.py
 |   |-- 04_exposure_facilities.py
-|   `-- 04_exposure_combine.py
+|   |-- 04_exposure_combine.py
+|   |-- 05_clean_census.py          # Task 6: Census vulnerability indicators
+|   |-- 05_join_boundaries.py
+|   `-- 05_vulnerability_score.py
 |-- data/
 |   |-- raw_data/          # inputs, tracked with Git LFS
 |   |-- interim/           # clipped layers (ignored by Git)
@@ -77,7 +80,7 @@ The raw files should end up in `data/raw_data/`. Expected contents:
 | Folder | Contents |
 | --- | --- |
 | `Building_footprints/` | `3b1_buildings.csv` (Google Open Buildings, Kerala) |
-| `census_2011_vulnerability_indicators/` | Census 2011 DDW/PCA tables (Alappuzha is district code 11; look for `3211`) |
+| `census_2011_vulnerability_indicators/` | Census 2011 DDW/PCA tables (file names use `3211`; Alappuzha is district code `598` inside the files) |
 | `critical_facilities/` | Facilities GeoPackage and the original clipping boundary |
 | `district_boundaries/` | `geoBoundaries-IND-ADM2.geojson` |
 | `elevation/` | Copernicus 30 m DEM tiles: `N09_00_E076_00`, `N09_00_E077_00`, `N10_00_E076_00`, `N10_00_E077_00` |
@@ -217,11 +220,20 @@ Scripts are added task by task. Current run order:
    .venv\Scripts\python.exe src\04_exposure_combine.py
    ```
 
-5. Build flood labels (KSDMA 100-year scenario).
-6. Create the spatial-block train/validation/test split.
-7. Train and tune the model.
-8. Evaluate, interpret and export risk maps/tables.
-9. Build the dashboard.
+5. Clean the Census 2011 indicators, join them to village polygons and build
+   the relative vulnerability score:
+
+   ```powershell
+   .venv\Scripts\python.exe src\05_clean_census.py
+   .venv\Scripts\python.exe src\05_join_boundaries.py
+   .venv\Scripts\python.exe src\05_vulnerability_score.py
+   ```
+
+6. Build flood labels (KSDMA 100-year scenario).
+7. Create the spatial-block train/validation/test split.
+8. Train and tune the model.
+9. Evaluate, interpret and export risk maps/tables.
+10. Build the dashboard.
 
 ## Configuration
 
@@ -248,6 +260,10 @@ Scripts are added task by task. Current run order:
   `50 m`, facility smoothing radius `500 m`, exposure cap at the 99th
   percentile, and weights population `0.5` / buildings `0.3` / facilities
   `0.2`.
+- Vulnerability settings: four equal-weighted indicators (child share,
+  combined SC/ST share, marginal/non-worker share and housing deprivation),
+  percentile-rank scaling, sub-district median filling, and an alternative
+  housing-heavy weight set for rank-sensitivity checks.
 - `OUTPUT_FILES` defines every interim/processed output path. Use
   `cfg.output_path("dem_grid")` rather than hard-coding file names in scripts.
 
@@ -277,9 +293,10 @@ raster summaries and map plotting.
   Alappuzha. Task 2 re-clips them to the district boundary.
 - The village file contains 88 Alappuzha villages, and the district name column
   is `DISTRICT`.
-- Census files use state/district code `32`/`11`, so the Alappuzha files start
-  with `3211`. The shortlist is added to `CENSUS_FILES` in `config.py` in
-  Task 6.
+- Census file names use `3211`, while the rows inside use state/district code
+  `32`/`598` for Alappuzha. The shortlisted PCA and HLPCA files are configured
+  in `CENSUS_FILES`; `HLPCA-32598` is the Alappuzha housing-census file
+  (`32597` is Kottayam and `32599` is Pathanamthitta).
 - The 2018 population grid totals 2,703,786 inside the district, 27.1% above
   the 2011 census (2,127,789). WorldPop R2025A is used as-is; the difference
   should be treated as a documented source caveat.
@@ -290,3 +307,59 @@ raster summaries and map plotting.
 - Facilities start at 1,285 features; 14 water/dam/reservoir records are
   excluded, and 50 m same-category deduplication leaves 1,031 facilities
   inside Alappuzha.
+
+## Task 6: Census vulnerability
+
+`05_clean_census.py` keeps village, town and ward rows, removes the
+sub-district/district summary rows and keeps the larger `Alappuzha (M + OG)`
+record instead of the duplicate `Alappuzha (M)` row. The cleaned area totals
+are 90 areas (52 villages, 38 towns) and 207 wards; the area population is
+exactly the 2011 census total, `2,127,789`.
+
+The PCA tables supply village-level SC/ST counts. The separate SC/ST PCA tables
+include district totals plus town rows (not village rows) and are used as
+validation: their district totals match the base PCA totals (`201,211` SC and
+`6,574` ST), and their town totals match the base urban totals (`89,280` SC and
+`3,613` ST).
+
+`05_join_boundaries.py` links the 88 Alappuzha polygons to 2011 areas through
+the 2011→2001 mapping, with name and type fallback for municipal towns. All
+88/88 polygons match; 83 matches use the code/name mapping and 5 use name/type
+fallback. The matched population share is `2,071,460 / 2,127,789 = 97.35%`.
+`Vayalar (CT)` and `Thanneermukkam (CT)` have no separate 2001 polygons and are
+listed in the join report. `Aryad South (Part)` has zero population and is
+filled from its sub-district median and flagged.
+
+The vulnerability score uses four equal-weighted indicators, each converted to
+a percentile rank across areas:
+
+- children aged 0-6 share (`P_06 / TOT_P`);
+- combined SC/ST share (`(P_SC + P_ST) / TOT_P`);
+- marginal or non-worker share (`(MARGWORK_P + NON_WORK_P) / TOT_P`);
+- housing deprivation, the mean of the no-latrine and temporary-structure
+  percentages from HLPCA.
+
+The score ranges from `0.112` to `0.810` (mean `0.500`). The raster has
+`176,745` district cells, with `3,062` cells without a village filled by the
+median area score (`0.514`) and NoData outside the district. Validation results:
+neighbour correlation `0.994`, equal-vs-housing-heavy Spearman `0.951`, and
+top-10 overlap `80%`. The score is relative within Alappuzha, not an absolute
+national scale.
+
+Outputs:
+
+- `data/interim/census_clean.csv`
+- `data/processed/villages_vuln.gpkg`
+- `data/processed/vulnerability_score.tif`
+- `outputs/tables/05_join_report.csv`
+- `outputs/tables/05_census_stats.json`
+- `outputs/tables/05_join_stats.json`
+- `outputs/tables/05_vulnerability_summary.csv`
+- `outputs/tables/05_vulnerability_stats.json`
+- `outputs/figures/05_vulnerability_overview.png`
+
+Limitations: the census is from 2011 and predates both the 2018 flood and the
+2018 WorldPop layer; the 2001 polygons do not represent every 2011 census town;
+towns receive one area-level score while the 207 ward rows are not scored
+separately; disability and elderly shares were not used, with child share
+serving as the age proxy.
