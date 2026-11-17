@@ -62,6 +62,15 @@ DEM_RAW = (
     / "Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif"
 )
 
+# Four Copernicus tiles cover the three target districts and their upstream
+# catchments (76-78 E, 9-11 N).
+DEM_REGIONAL_TILES = (
+    RAW_DIR / "elevation" / "Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif",
+    RAW_DIR / "elevation" / "Copernicus_DSM_COG_30_N09_00_E077_00_DEM.tif",
+    RAW_DIR / "elevation" / "Copernicus_DSM_COG_30_N10_00_E076_00_DEM.tif",
+    RAW_DIR / "elevation" / "Copernicus_DSM_COG_30_N10_00_E077_00_DEM.tif",
+)
+
 LANDCOVER_RAW = (
     RAW_DIR
     / "land_cover"
@@ -95,6 +104,11 @@ FLOOD_2018_RAW = RAW_DIR / "flood_extent" / "kerala_flood_2018_s1.tif"
 
 ROADS_RAW = RAW_DIR / "roads" / "Alappuzha_roads.gpkg"
 WATERWAYS_RAW = RAW_DIR / "waterways" / "Alappuzha_waterways.gpkg"
+WATERWAYS_BY_DISTRICT = {
+    "Alappuzha": WATERWAYS_RAW,
+    "Kottayam": RAW_DIR / "waterways" / "Kottayam_waterways.gpkg",
+    "Pathanamthitta": RAW_DIR / "waterways" / "Pathanamthitta_waterways.gpkg",
+}
 
 POPULATION_2018_RAW = (
     RAW_DIR
@@ -141,6 +155,7 @@ CENSUS_FILES: dict[str, Path] = {}
 # ---------------------------------------------------------------------------
 
 DISTRICT_NAME = "Alappuzha"
+REGIONAL_DISTRICT_NAMES = ("Alappuzha", "Kottayam", "Pathanamthitta")
 
 # Column in the geoBoundaries ADM2 file that holds district names.
 DISTRICT_NAME_COLUMN = "shapeName"
@@ -163,6 +178,7 @@ GRID_RESOLUTION = 90  # metres
 DEM_30M_RESOLUTION = 30  # optional full-detail DEM
 DISTRICT_BUFFER_M = 1000  # metres around the district boundary
 GRID_PATH = PROCESSED_DIR / "grid_template.tif"
+REGIONAL_GRID_PATH = PROCESSED_DIR / "regional_grid_template.tif"
 
 
 # ---------------------------------------------------------------------------
@@ -196,6 +212,22 @@ KSDMA_MASK_PATH = PROCESSED_DIR / KSDMA_MASK_NAME
 
 BUILDING_CONFIDENCE_THRESHOLD = 0.7
 FLOOD_MASK_THRESHOLD = 0.5
+
+# Terrain and drainage settings (Task 4).
+WATERWAY_FLOW_TYPES = (
+    "river",
+    "stream",
+    "canal",
+    "ditch",
+    "drain",
+    "tidal_channel",
+    "brook",
+)
+WATERWAY_BURN_DEPTH_M = 5.0
+STREAM_ACCUMULATION_THRESHOLD = 1000  # upstream cells at 90 m
+HAND_ACCUMULATION_THRESHOLD = 250  # upstream cells for HAND drainage cells
+TWI_MIN_SLOPE_DEG = 0.1
+RESOLVE_FLATS_EPS = 1e-7
 
 # Columns in the Google Open Buildings CSV.
 BUILDINGS_LAT_COLUMN = "latitude"
@@ -293,6 +325,13 @@ OUTPUT_FILES = {
     "flood2018_bin": PROCESSED_DIR / "flood2018_bin.tif",
     "pop2018_90m": PROCESSED_DIR / "pop2018_90m.tif",
     "dem_30m": PROCESSED_DIR / "dem_30m.tif",
+    # Regional terrain inputs (Task 4)
+    "regional_grid": REGIONAL_GRID_PATH,
+    "dem_regional_raw_90m": PROCESSED_DIR / "dem_regional_raw_90m.tif",
+    "dem_regional_90m": PROCESSED_DIR / "dem_regional_90m.tif",
+    "waterways_regional": INTERIM_DIR / "waterways_regional.gpkg",
+    "waterways_regional_grid": PROCESSED_DIR / "waterways_regional_90m.tif",
+    "regional_dem_stats": TABLES_DIR / "03_regional_dem_stats.json",
     # Aliases retained for later tasks
     "landcover_grid": PROCESSED_DIR / "landcover_mode.tif",
     "ksdma_grid": PROCESSED_DIR / "ksdma_100yr_90m.tif",
@@ -307,8 +346,26 @@ OUTPUT_FILES = {
     # Task 3 inspection outputs
     "aligned_overview": FIGURES_DIR / "02_aligned_overview.png",
     "alignment_stats": TABLES_DIR / "02_alignment_stats.json",
+    # Terrain features (Task 4)
+    "flow_direction": PROCESSED_DIR / "flow_direction_90m.tif",
+    "flow_accumulation": PROCESSED_DIR / "flow_accumulation_90m.tif",
+    "log_flow_accumulation": PROCESSED_DIR / "log_flow_accumulation_90m.tif",
+    "streams_grid": PROCESSED_DIR / "streams_90m.tif",
+    "hand_grid": PROCESSED_DIR / "hand_90m.tif",
+    "slope_grid": PROCESSED_DIR / "slope_90m.tif",
+    "twi_grid": PROCESSED_DIR / "twi_90m.tif",
+    "distance_permanent_water_grid": (
+        PROCESSED_DIR / "distance_to_permanent_water_90m.tif"
+    ),
+    "features_stack": PROCESSED_DIR / "features_stack.tif",
+    "features_stack_bands": PROCESSED_DIR / "features_stack_bands.json",
+    "features_valid_mask": PROCESSED_DIR / "features_valid_mask.tif",
+    "terrain_stats": TABLES_DIR / "03_terrain_stats.json",
+    "waterway_distance_stats": TABLES_DIR / "03_waterway_distance_stats.json",
+    "feature_summary": TABLES_DIR / "03_feature_summary.csv",
+    "features_overview": FIGURES_DIR / "03_features_overview.png",
+    "feature_stats": TABLES_DIR / "03_feature_stats.json",
     # Later modelling outputs
-    "feature_stack": PROCESSED_DIR / "feature_stack.npz",
     "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
     "model": MODELS_DIR / "flood_risk_model.pt",
 }

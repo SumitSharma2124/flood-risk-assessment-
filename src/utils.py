@@ -1031,6 +1031,79 @@ def align_raster(
     return destination, profile
 
 
+def crop_raster_to_grid(
+    src_path: str | Path,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    band: int = 1,
+    dtype: str | None = None,
+    nodata: float | int | None = None,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Crop an already-aligned raster to the exact common grid.
+
+    This does not resample.  The source must have the same CRS, resolution and
+    grid origin as ``template``; it may simply be larger.
+    """
+    import rasterio
+    from rasterio.windows import Window, from_bounds
+
+    grid = _coerce_grid(template)
+    with rasterio.open(src_path) as src:
+        if src.crs != grid["crs"]:
+            raise ValueError(
+                f"Source CRS {src.crs} does not match grid CRS {grid['crs']}"
+            )
+        if not (
+            np.isclose(src.res[0], grid["transform"].a)
+            and np.isclose(src.res[1], abs(grid["transform"].e))
+        ):
+            raise ValueError(
+                f"Source resolution {src.res} does not match grid resolution"
+            )
+
+        window = from_bounds(*grid["bounds"], transform=src.transform)
+        col_off = int(round(window.col_off))
+        row_off = int(round(window.row_off))
+        if not (
+            np.isclose(window.col_off, col_off, atol=1e-6)
+            and np.isclose(window.row_off, row_off, atol=1e-6)
+            and np.isclose(window.width, grid["width"], atol=1e-6)
+            and np.isclose(window.height, grid["height"], atol=1e-6)
+        ):
+            raise ValueError("Source is not aligned to the target grid")
+
+        data = src.read(
+            band,
+            window=Window(col_off, row_off, grid["width"], grid["height"]),
+        )
+        profile = src.profile.copy()
+
+    out_dtype = np.dtype(dtype or data.dtype).name
+    out_nodata = nodata if nodata is not None else profile.get("nodata")
+    profile.update(
+        driver="GTiff",
+        count=1,
+        height=grid["height"],
+        width=grid["width"],
+        crs=grid["crs"],
+        transform=grid["transform"],
+        dtype=out_dtype,
+        nodata=out_nodata,
+    )
+
+    if out_path is not None:
+        write_raster(
+            data,
+            out_path,
+            profile,
+            nodata=out_nodata,
+            dtype=out_dtype,
+        )
+
+    return data, profile
+
+
 def reproject_array(
     source: np.ndarray,
     src_transform: Any,
@@ -1235,6 +1308,99 @@ def rasterize_vector(
         write_raster(result, out_path, profile, nodata=out_nodata, dtype=dtype)
 
     return result, profile
+
+
+def rasterize_streams(
+    waterways: Any,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    accumulation: np.ndarray | None = None,
+    threshold: float | None = None,
+    all_touched: bool = True,
+    dtype: str = "uint8",
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Rasterise line waterways and optionally add high-accumulation cells."""
+    mask, profile = rasterize_vector(
+        waterways,
+        template=template,
+        burn_value=1,
+        fill=0,
+        all_touched=all_touched,
+        dtype=dtype,
+        nodata=None,
+    )
+    mask = np.asarray(mask)
+
+    if accumulation is not None or threshold is not None:
+        if accumulation is None or threshold is None:
+            raise ValueError("Pass both accumulation and threshold, or neither")
+        acc = np.asarray(accumulation)
+        if acc.shape != mask.shape:
+            raise ValueError(
+                f"Accumulation shape {acc.shape} does not match mask {mask.shape}"
+            )
+        if np.issubdtype(acc.dtype, np.floating):
+            acc_valid = np.isfinite(acc) & (acc != cfg.NODATA)
+        else:
+            acc_valid = acc != cfg.NODATA
+        mask = ((mask > 0) | (acc_valid & (acc >= threshold))).astype(dtype)
+
+    if out_path is not None:
+        write_raster(
+            mask,
+            out_path,
+            profile,
+            nodata=None,
+            dtype=dtype,
+        )
+
+    return mask, profile
+
+
+def distance_to_mask(
+    mask: np.ndarray,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    mask_values: Iterable[float | int] | None = None,
+    dtype: str = "float32",
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Return Euclidean distance in metres to the nearest selected mask cell."""
+    from scipy.ndimage import distance_transform_edt
+
+    grid = _coerce_grid(template)
+    array = np.asarray(mask)
+    if mask_values is not None:
+        target = np.isin(array, list(mask_values))
+    else:
+        target = array.astype(bool)
+
+    if np.issubdtype(array.dtype, np.floating):
+        target &= np.isfinite(array)
+    if not target.any():
+        raise ValueError("Cannot compute distance: mask contains no target cells")
+
+    pixel_y = abs(grid["transform"].e)
+    pixel_x = abs(grid["transform"].a)
+    distance = distance_transform_edt(
+        ~target,
+        sampling=(pixel_y, pixel_x),
+    ).astype(dtype)
+    distance[target] = 0
+
+    profile = grid["profile"].copy()
+    profile.update(dtype=np.dtype(dtype).name, count=1, nodata=cfg.NODATA)
+    if out_path is not None:
+        write_raster(
+            distance,
+            out_path,
+            profile,
+            nodata=cfg.NODATA,
+            dtype=dtype,
+        )
+
+    return distance, profile
 
 
 # ---------------------------------------------------------------------------

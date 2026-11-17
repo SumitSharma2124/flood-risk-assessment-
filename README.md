@@ -17,7 +17,15 @@ flood_risk/
 |-- src/
 |   |-- __init__.py
 |   |-- config.py          # paths, CRS, grid, NoData, thresholds, output names
-|   `-- utils.py           # shared raster/vector/grid/plot helpers
+|   |-- utils.py           # shared raster/vector/grid/plot helpers
+|   |-- 01_clip_layers.py  # Task 2: clip raw layers to Alappuzha + 1 km
+|   |-- 01_inspect_layers.py
+|   |-- 02_build_grid.py   # Task 3: common 90 m grid and district mask
+|   |-- 02_align_rasters.py
+|   |-- 03_prepare_regional_dem.py  # Task 4: regional DEM and waterways
+|   |-- 03_terrain_features.py
+|   |-- 03_waterway_distance.py
+|   `-- 03_stack_features.py
 |-- data/
 |   |-- raw_data/          # inputs, tracked with Git LFS
 |   |-- interim/           # clipped layers (ignored by Git)
@@ -68,7 +76,7 @@ The raw files should end up in `data/raw_data/`. Expected contents:
 | `census_2011_vulnerability_indicators/` | Census 2011 DDW/PCA tables (Alappuzha is district code 11; look for `3211`) |
 | `critical_facilities/` | Facilities GeoPackage and the original clipping boundary |
 | `district_boundaries/` | `geoBoundaries-IND-ADM2.geojson` |
-| `elevation/` | Copernicus 30 m DEM tiles (only `N09_00_E076_00` is needed) |
+| `elevation/` | Copernicus 30 m DEM tiles: `N09_00_E076_00`, `N09_00_E077_00`, `N10_00_E076_00`, `N10_00_E077_00` |
 | `flood_extent/` | `kerala_flood_2018_s1.tif` and the 2018 flood reports |
 | `flood_probability/` | KSDMA return-period rasters (10–500 years) |
 | `land_cover/` | ESA WorldCover 10 m 2021 (`N09E075` tile is needed) |
@@ -77,7 +85,7 @@ The raw files should end up in `data/raw_data/`. Expected contents:
 | `roads/` | `Alappuzha_roads.gpkg` |
 | `shelters/` | Kerala monsoon camp Excel workbook |
 | `village_boundaries/` | `kl.geojson` and the 2001/2011 village code mapping |
-| `waterways/` | `Alappuzha_waterways.gpkg` |
+| `waterways/` | `Alappuzha`, `Kottayam` and `Pathanamthitta` waterways GeoPackages |
 
 ## Rebuilding the building footprints CSV
 
@@ -163,21 +171,44 @@ build.
 
 ## Running the pipeline
 
-Always run scripts **from the project root** so package imports work:
+Always run scripts **from the project root** so package imports work. The
+digit-prefixed files cannot be imported as modules, so run them directly:
 
 ```powershell
-python -m src.01_clip_layers
+.venv\Scripts\python.exe src\01_clip_layers.py
 ```
 
-Scripts are added task by task. Planned run order:
+Scripts are added task by task. Current run order:
 
-1. Clip raw layers to the district (`python -m src.01_clip_layers`).
-2. Build and save the common 90 m grid, then align every layer to it.
-3. Build features and flood labels (KSDMA 100-year scenario).
-4. Create the spatial-block train/validation/test split.
-5. Train and tune the model.
-6. Evaluate, interpret and export risk maps/tables.
-7. Build the dashboard.
+1. Clip raw layers to the district and inspect them:
+
+   ```powershell
+   .venv\Scripts\python.exe src\01_clip_layers.py
+   .venv\Scripts\python.exe src\01_inspect_layers.py
+   ```
+
+2. Build the common 90 m grid and align every raster layer:
+
+   ```powershell
+   .venv\Scripts\python.exe src\02_build_grid.py
+   .venv\Scripts\python.exe src\02_align_rasters.py
+   ```
+
+3. Prepare the regional DEM/waterways, derive terrain features and distances,
+   then stack them:
+
+   ```powershell
+   .venv\Scripts\python.exe src\03_prepare_regional_dem.py
+   .venv\Scripts\python.exe src\03_terrain_features.py
+   .venv\Scripts\python.exe src\03_waterway_distance.py
+   .venv\Scripts\python.exe src\03_stack_features.py
+   ```
+
+4. Build flood labels (KSDMA 100-year scenario).
+5. Create the spatial-block train/validation/test split.
+6. Train and tune the model.
+7. Evaluate, interpret and export risk maps/tables.
+8. Build the dashboard.
 
 ## Configuration
 
@@ -191,9 +222,13 @@ Scripts are added task by task. Planned run order:
   `RETURN_PERIODS = (10, 25, 50, 100, 200, 500)`.
 - CRS: `EPSG:4326` for geographic data and `EPSG:32643` (UTM 43N) for analysis.
 - Grid: 90 m cells, 1 km buffer around the district boundary, saved at
-  `data/processed/grid_alappuzha_90m.tif`.
+  `data/processed/grid_template.tif`. The regional routing grid is saved at
+  `data/processed/regional_grid_template.tif`.
 - NoData: `-9999` for processed rasters; raw KSDMA NoData is `-3.4e38` (and
   `0` for the 500-year raster).
+- Terrain: four regional Copernicus DEM tiles, waterway burn depth `5.0 m`,
+  stream accumulation threshold `1,000` cells, HAND drainage threshold `250`
+  cells, TWI minimum slope `0.1°`, and flat resolution epsilon `1e-7`.
 - Model settings: building confidence `0.7`, flood-mask threshold `0.5`,
   random seed `42`, patch size `64`, 5 km spatial blocks, 70/15/15 split.
 - `OUTPUT_FILES` defines every interim/processed output path. Use
@@ -213,12 +248,15 @@ summaries and map plotting.
 - `geoBoundaries-IND-ADM2.geojson` uses the column **`shapeName`**; the
   `Alappuzha` row is present.
 - The DEM tile `Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif` covers the whole
-  district (district bounds: 76.277–76.693°E, 9.110–9.892°N). No other DEM tile
-  is needed.
+  district (district bounds: 76.277–76.693°E, 9.110–9.892°N). The four
+  `N09/N10` × `E076/E077` tiles are used for regional flow routing, so upstream
+  catchments in Kottayam and Pathanamthitta are included.
+- Waterways are available for Alappuzha, Kottayam and Pathanamthitta. Task 4
+  merges and de-duplicates them, then burns flow lines into the regional DEM.
 - The critical facilities were **not** clipped to Alappuzha. They follow
   `clipping_boundary.geojson`, a custom polygon of about 3,679 km² (the district
   is about 1,432 km²), and only 1,195 of 3,675 facilities fall inside
-  Alappuzha. Task 2 must re-clip them to the district boundary.
+  Alappuzha. Task 2 re-clips them to the district boundary.
 - The village file contains 88 Alappuzha villages, and the district name column
   is `DISTRICT`.
 - Census files use state/district code `32`/`11`, so the Alappuzha files start
