@@ -25,7 +25,11 @@ flood_risk/
 |   |-- 03_prepare_regional_dem.py  # Task 4: regional DEM and waterways
 |   |-- 03_terrain_features.py
 |   |-- 03_waterway_distance.py
-|   `-- 03_stack_features.py
+|   |-- 03_stack_features.py
+|   |-- 04_exposure_population.py   # Task 5: population exposure
+|   |-- 04_exposure_buildings.py
+|   |-- 04_exposure_facilities.py
+|   `-- 04_exposure_combine.py
 |-- data/
 |   |-- raw_data/          # inputs, tracked with Git LFS
 |   |-- interim/           # clipped layers (ignored by Git)
@@ -204,11 +208,20 @@ Scripts are added task by task. Current run order:
    .venv\Scripts\python.exe src\03_stack_features.py
    ```
 
-4. Build flood labels (KSDMA 100-year scenario).
-5. Create the spatial-block train/validation/test split.
-6. Train and tune the model.
-7. Evaluate, interpret and export risk maps/tables.
-8. Build the dashboard.
+4. Build exposure layers and the combined 0-1 exposure score:
+
+   ```powershell
+   .venv\Scripts\python.exe src\04_exposure_population.py
+   .venv\Scripts\python.exe src\04_exposure_buildings.py
+   .venv\Scripts\python.exe src\04_exposure_facilities.py
+   .venv\Scripts\python.exe src\04_exposure_combine.py
+   ```
+
+5. Build flood labels (KSDMA 100-year scenario).
+6. Create the spatial-block train/validation/test split.
+7. Train and tune the model.
+8. Evaluate, interpret and export risk maps/tables.
+9. Build the dashboard.
 
 ## Configuration
 
@@ -231,13 +244,18 @@ Scripts are added task by task. Current run order:
   cells, TWI minimum slope `0.1°`, and flat resolution epsilon `1e-7`.
 - Model settings: building confidence `0.7`, flood-mask threshold `0.5`,
   random seed `42`, patch size `64`, 5 km spatial blocks, 70/15/15 split.
+- Exposure settings: minimum building footprint `10 m2`, facility dedup radius
+  `50 m`, facility smoothing radius `500 m`, exposure cap at the 99th
+  percentile, and weights population `0.5` / buildings `0.3` / facilities
+  `0.2`.
 - `OUTPUT_FILES` defines every interim/processed output path. Use
   `cfg.output_path("dem_grid")` rather than hard-coding file names in scripts.
 
 `src/utils.py` provides the shared helpers: logger and seed setup, raster/vector
 read-write, district loading, buffered clipping with windowed reads, grid
-construction/alignment/rasterisation, NoData handling, grid checks, raster
-summaries and map plotting.
+construction/alignment/rasterisation, point-to-grid counting and
+deduplication, percentile scaling and smoothing, NoData handling, grid checks,
+raster summaries and map plotting.
 
 ## Data checks performed during setup
 
@@ -262,3 +280,13 @@ summaries and map plotting.
 - Census files use state/district code `32`/`11`, so the Alappuzha files start
   with `3211`. The shortlist is added to `CENSUS_FILES` in `config.py` in
   Task 6.
+- The 2018 population grid totals 2,703,786 inside the district, 27.1% above
+  the 2011 census (2,127,789). WorldPop R2025A is used as-is; the difference
+  should be treated as a documented source caveat.
+- The building layer has 1,111,252 features. After confidence `>=0.7`, minimum
+  footprint `10 m2` and district filtering, 791,918 buildings remain
+  (68.1 km2 footprint, about 1.58x the 500,000-household reference). Google
+  Open Buildings uses newer imagery than 2018.
+- Facilities start at 1,285 features; 14 water/dam/reservoir records are
+  excluded, and 50 m same-category deduplication leaves 1,031 facilities
+  inside Alappuzha.

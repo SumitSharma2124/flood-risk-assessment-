@@ -1403,6 +1403,323 @@ def distance_to_mask(
     return distance, profile
 
 
+def polygon_centroids(
+    vector: Any,
+    crs: Any = cfg.CRS_WORKING,
+) -> Any:
+    """Return a copy of a polygon layer with point centroids as geometry."""
+    import geopandas as gpd
+
+    if isinstance(vector, (str, Path)):
+        gdf = read_vector(vector)
+    elif isinstance(vector, gpd.GeoDataFrame):
+        gdf = vector.copy()
+    else:
+        raise TypeError("polygon_centroids expects a GeoDataFrame or path")
+
+    if crs is not None and gdf.crs is not None and gdf.crs != crs:
+        gdf = gdf.to_crs(crs)
+
+    valid = gdf.geometry.notna() & ~gdf.geometry.is_empty
+    gdf = gdf.loc[valid].copy()
+    gdf = gdf.set_geometry(gdf.geometry.centroid)
+    valid = gdf.geometry.notna() & ~gdf.geometry.is_empty
+    return gdf.loc[valid].copy()
+
+
+def points_to_grid(
+    points: Any,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    values: Any | None = None,
+    fill: float = 0.0,
+    dtype: str = "float32",
+    nodata: float | int | None = None,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Count points (or sum point values) into grid cells."""
+    import geopandas as gpd
+
+    grid = _coerce_grid(template)
+
+    if isinstance(points, gpd.GeoDataFrame):
+        gdf = points
+        if gdf.crs is not None and gdf.crs != grid["crs"]:
+            gdf = gdf.to_crs(grid["crs"])
+        x = gdf.geometry.x.to_numpy(dtype="float64")
+        y = gdf.geometry.y.to_numpy(dtype="float64")
+    elif isinstance(points, gpd.GeoSeries):
+        gdf = points
+        if gdf.crs is not None and gdf.crs != grid["crs"]:
+            gdf = gdf.to_crs(grid["crs"])
+        x = gdf.x.to_numpy(dtype="float64")
+        y = gdf.y.to_numpy(dtype="float64")
+    else:
+        coordinates = np.asarray(points, dtype="float64")
+        if coordinates.ndim != 2 or coordinates.shape[1] != 2:
+            raise ValueError("Raw points must be an array with shape (n, 2)")
+        x = coordinates[:, 0]
+        y = coordinates[:, 1]
+
+    weights = (
+        np.ones(x.shape, dtype="float64")
+        if values is None
+        else np.asarray(values, dtype="float64")
+    )
+    if weights.shape != x.shape:
+        raise ValueError(
+            f"Values shape {weights.shape} does not match points shape {x.shape}"
+        )
+
+    valid = np.isfinite(x) & np.isfinite(y) & np.isfinite(weights)
+    x = x[valid]
+    y = y[valid]
+    weights = weights[valid]
+
+    cols_f, rows_f = ~grid["transform"] * (x, y)
+    rows = np.floor(rows_f).astype("int64")
+    cols = np.floor(cols_f).astype("int64")
+    inside = (
+        (rows >= 0)
+        & (rows < grid["height"])
+        & (cols >= 0)
+        & (cols < grid["width"])
+    )
+    rows = rows[inside]
+    cols = cols[inside]
+    weights = weights[inside]
+
+    flat = rows * grid["width"] + cols
+    counts = np.full(
+        grid["height"] * grid["width"],
+        float(fill),
+        dtype="float64",
+    )
+    counts += np.bincount(flat, weights=weights, minlength=counts.size)
+    result = counts.reshape(grid["height"], grid["width"]).astype(dtype)
+
+    out_nodata = _safe_nodata(np.dtype(dtype), nodata) if nodata is not None else None
+    profile = grid["profile"].copy()
+    profile.update(dtype=np.dtype(dtype).name, count=1, nodata=out_nodata)
+    if out_path is not None:
+        write_raster(
+            result,
+            out_path,
+            profile,
+            nodata=out_nodata,
+            dtype=dtype,
+        )
+
+    return result, profile
+
+
+def deduplicate_points(
+    points: Any,
+    radius_m: float,
+    *,
+    group_col: str | None = None,
+    crs: Any = cfg.CRS_WORKING,
+) -> tuple[Any, dict[str, Any]]:
+    """Remove same-group points that lie within ``radius_m`` of each other."""
+    import geopandas as gpd
+    from scipy.spatial import cKDTree
+
+    if isinstance(points, (str, Path)):
+        gdf = read_vector(points)
+    elif isinstance(points, gpd.GeoDataFrame):
+        gdf = points.copy()
+    else:
+        raise TypeError("deduplicate_points expects a GeoDataFrame or path")
+
+    if crs is not None and gdf.crs is not None and gdf.crs != crs:
+        gdf = gdf.to_crs(crs)
+    if group_col is not None and group_col not in gdf.columns:
+        raise KeyError(f"Column '{group_col}' not found in point layer")
+
+    valid = gdf.geometry.notna() & ~gdf.geometry.is_empty
+    gdf = gdf.loc[valid].reset_index(drop=True)
+    if not gdf.geom_type.isin(["Point"]).all():
+        raise ValueError("deduplicate_points expects point geometries")
+
+    input_points = int(len(gdf))
+    if radius_m <= 0 or input_points == 0:
+        stats = {
+            "input_points": input_points,
+            "output_points": input_points,
+            "removed": 0,
+            "radius_m": float(radius_m),
+            "group_column": group_col,
+        }
+        return gdf.copy(), stats
+
+    if group_col is None:
+        groups: Iterable[tuple[Any, np.ndarray]] = (
+            (None, np.arange(input_points, dtype="int64")),
+        )
+    else:
+        groups = gdf.groupby(group_col, dropna=False).indices.items()
+
+    keep: set[int] = set()
+    for _, group_positions in groups:
+        positions = np.asarray(group_positions, dtype="int64")
+        if positions.size <= 1:
+            keep.update(positions.tolist())
+            continue
+
+        coords = np.column_stack(
+            (
+                gdf.geometry.x.to_numpy()[positions],
+                gdf.geometry.y.to_numpy()[positions],
+            )
+        )
+        parent = np.arange(positions.size, dtype="int64")
+
+        def find(index: int) -> int:
+            while parent[index] != index:
+                parent[index] = parent[parent[index]]
+                index = int(parent[index])
+            return index
+
+        for first, second in cKDTree(coords).query_pairs(radius_m):
+            root_first = find(first)
+            root_second = find(second)
+            if root_first != root_second:
+                parent[root_second] = root_first
+
+        representatives: dict[int, int] = {}
+        for local_index, global_index in enumerate(positions):
+            root = find(local_index)
+            representatives.setdefault(root, int(global_index))
+        keep.update(representatives.values())
+
+    result = gdf.iloc[sorted(keep)].copy()
+    stats = {
+        "input_points": input_points,
+        "output_points": int(len(result)),
+        "removed": int(input_points - len(result)),
+        "radius_m": float(radius_m),
+        "group_column": group_col,
+    }
+    return result, stats
+
+
+def robust_scale(
+    array: np.ndarray,
+    valid_mask: np.ndarray | None = None,
+    *,
+    upper_percentile: float = 99.0,
+    lower_percentile: float = 0.0,
+    log1p: bool = False,
+    nodata: float | int = cfg.NODATA,
+    dtype: str = "float32",
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Cap skewed values and scale them to 0-1 inside a domain mask."""
+    data = np.asarray(array, dtype="float64")
+    if data.ndim != 2:
+        raise ValueError(f"Expected a 2-D array, got shape {data.shape}")
+    if valid_mask is not None:
+        domain = np.asarray(valid_mask, dtype=bool)
+        if domain.shape != data.shape:
+            raise ValueError("valid_mask must have the same shape as array")
+    else:
+        domain = np.ones(data.shape, dtype=bool)
+
+    finite = np.isfinite(data) & (data != nodata)
+    domain_values = data[domain & finite]
+    if not domain_values.size:
+        raise ValueError("Cannot scale: no finite values inside the domain")
+
+    transformed = data.copy()
+    if log1p:
+        transformed = np.log1p(np.maximum(transformed, 0.0))
+
+    selected = transformed[domain & finite]
+    lower = float(np.percentile(selected, lower_percentile))
+    upper = float(np.percentile(selected, upper_percentile))
+    if not np.isfinite(lower) or not np.isfinite(upper):
+        raise ValueError("Cannot scale: percentiles are not finite")
+    if upper <= lower:
+        upper = lower + 1.0
+
+    scaled = (np.clip(transformed, lower, upper) - lower) / (upper - lower)
+    out = np.full(data.shape, nodata, dtype="float64")
+    out[domain] = np.where(finite[domain], scaled[domain], 0.0)
+    out = out.astype(dtype)
+
+    info = {
+        "method": "percentile_cap",
+        "log1p": bool(log1p),
+        "lower_percentile": float(lower_percentile),
+        "upper_percentile": float(upper_percentile),
+        "lower_value": lower,
+        "upper_value": upper,
+        "valid_values": int(domain_values.size),
+        "zero_filled_cells": int((domain & ~finite).sum()),
+        "min": float(out[domain].min()),
+        "max": float(out[domain].max()),
+        "mean": float(out[domain].mean()),
+    }
+    return out, info
+
+
+def smooth_raster(
+    array: np.ndarray,
+    radius_m: float,
+    template: Any = cfg.GRID_PATH,
+    out_path: str | Path | None = None,
+    *,
+    valid_mask: np.ndarray | None = None,
+    nodata: float | int = cfg.NODATA,
+    dtype: str = "float32",
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Return a disk-smoothed raster using only valid cells."""
+    from scipy.ndimage import convolve
+
+    grid = _coerce_grid(template)
+    data = np.asarray(array, dtype="float64")
+    if data.ndim != 2:
+        raise ValueError(f"Expected a 2-D array, got shape {data.shape}")
+    if data.shape != (grid["height"], grid["width"]):
+        raise ValueError("array shape does not match the target grid")
+
+    if valid_mask is None:
+        valid = np.isfinite(data) & (data != nodata)
+    else:
+        valid = np.asarray(valid_mask, dtype=bool)
+        if valid.shape != data.shape:
+            raise ValueError("valid_mask must have the same shape as array")
+
+    pixel_size = abs(float(grid["transform"].a))
+    radius_cells = max(1, int(round(float(radius_m) / pixel_size)))
+    offsets = np.arange(-radius_cells, radius_cells + 1)
+    yy, xx = np.meshgrid(offsets, offsets, indexing="ij")
+    kernel = ((xx**2 + yy**2) <= radius_cells**2).astype("float64")
+    kernel /= kernel.sum()
+
+    values = np.where(valid & np.isfinite(data), data, 0.0)
+    weights = valid.astype("float64")
+    smoothed_values = convolve(values, kernel, mode="constant", cval=0.0)
+    smoothed_weights = convolve(weights, kernel, mode="constant", cval=0.0)
+
+    result = np.full(data.shape, nodata, dtype="float64")
+    covered = smoothed_weights > 0
+    result[covered] = smoothed_values[covered] / smoothed_weights[covered]
+    result[valid & ~np.isfinite(data)] = 0.0
+    result = result.astype(dtype)
+
+    profile = grid["profile"].copy()
+    profile.update(dtype=np.dtype(dtype).name, count=1, nodata=nodata)
+    if out_path is not None:
+        write_raster(
+            result,
+            out_path,
+            profile,
+            nodata=nodata,
+            dtype=dtype,
+        )
+    return result, profile
+
+
 # ---------------------------------------------------------------------------
 # NoData and checks
 # ---------------------------------------------------------------------------

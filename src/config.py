@@ -229,6 +229,46 @@ HAND_ACCUMULATION_THRESHOLD = 250  # upstream cells for HAND drainage cells
 TWI_MIN_SLOPE_DEG = 0.1
 RESOLVE_FLATS_EPS = 1e-7
 
+# Exposure settings (Task 5).
+MIN_BUILDING_FOOTPRINT_M2 = 10.0
+BUILDING_COUNT_REFERENCE = 500_000  # order-of-magnitude 2011 household check
+EXPOSURE_CAP_PERCENTILE = 99.0
+EXPOSURE_SCALE_LOG = False
+EXPOSURE_BUILDING_METRIC = "count"  # "count" or "area"
+FACILITY_DEDUP_RADIUS_M = 50.0
+FACILITY_SMOOTH_RADIUS_M = 500.0
+FACILITY_CATEGORIES = (
+    "hospital",
+    "fire_station",
+    "police",
+    "substation",
+    "power_plant",
+    "school",
+    "college",
+    "clinic",
+    "water_tower",
+    "pump_house",
+    "water_point",
+)
+FACILITY_CATEGORY_WEIGHTS = {
+    "hospital": 1.0,
+    "fire_station": 0.9,
+    "police": 0.8,
+    "substation": 0.8,
+    "power_plant": 0.8,
+    "school": 0.5,
+    "college": 0.5,
+    "clinic": 0.4,
+    "water_tower": 0.3,
+    "pump_house": 0.3,
+    "water_point": 0.2,
+}
+EXPOSURE_WEIGHTS = {
+    "population": 0.5,
+    "buildings": 0.3,
+    "facilities": 0.2,
+}
+
 # Columns in the Google Open Buildings CSV.
 BUILDINGS_LAT_COLUMN = "latitude"
 BUILDINGS_LON_COLUMN = "longitude"
@@ -365,6 +405,26 @@ OUTPUT_FILES = {
     "feature_summary": TABLES_DIR / "03_feature_summary.csv",
     "features_overview": FIGURES_DIR / "03_features_overview.png",
     "feature_stats": TABLES_DIR / "03_feature_stats.json",
+    # Exposure layers (Task 5)
+    "exposure_population_count": PROCESSED_DIR / "exposure_population_count.tif",
+    "exposure_pop": PROCESSED_DIR / "exposure_pop.tif",
+    "exposure_buildings_count": PROCESSED_DIR / "exposure_buildings_count.tif",
+    "exposure_buildings_area": PROCESSED_DIR / "exposure_buildings_area.tif",
+    "exposure_facilities_counts": PROCESSED_DIR / "exposure_facilities_counts.tif",
+    "exposure_facilities_categories": (
+        PROCESSED_DIR / "exposure_facilities_categories.json"
+    ),
+    "exposure_facilities_score": PROCESSED_DIR / "exposure_facilities_score.tif",
+    "exposure_facilities_score_raw": (
+        PROCESSED_DIR / "exposure_facilities_score_raw.tif"
+    ),
+    "exposure_score": PROCESSED_DIR / "exposure_score.tif",
+    "exposure_population_stats": TABLES_DIR / "04_exposure_population_stats.json",
+    "exposure_buildings_stats": TABLES_DIR / "04_exposure_buildings_stats.json",
+    "exposure_facilities_stats": TABLES_DIR / "04_exposure_facilities_stats.json",
+    "exposure_combine_stats": TABLES_DIR / "04_exposure_combine_stats.json",
+    "exposure_summary": TABLES_DIR / "04_exposure_summary.csv",
+    "exposure_overview": FIGURES_DIR / "04_exposure_overview.png",
     # Later modelling outputs
     "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
     "model": MODELS_DIR / "flood_risk_model.pt",
