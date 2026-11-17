@@ -546,6 +546,20 @@ RAW_INPUTS = {
     "census_hlpca": CENSUS_FILES["hlpca"],
 }
 
+# Task 7: relief camps
+OUTPUT_FILES.update({
+    "camps_clean": INTERIM_DIR / "camps_clean.csv",
+    "camps_located": INTERIM_DIR / "camps_located.csv",
+    "camps_geocode_cache": INTERIM_DIR / "camps_geocode_cache.json",
+    "camps": PROCESSED_DIR / "camps.gpkg",
+    "camps_clean_stats": TABLES_DIR / "06_camps_clean_stats.json",
+    "camps_validation": TABLES_DIR / "06_camps_validation.json",
+    "camps_summary": TABLES_DIR / "06_camps_summary.csv",
+    "camps_overview": FIGURES_DIR / "06_camps_overview.png",
+})
+CAMPS_FUZZY_THRESHOLD = 85       # name match score (0-100) inside the same village
+CAMPS_FUZZY_THRESHOLD_WIDE = 92  # stricter score when searching the whole district
+CAMPS_MAX_VILLAGE_DIST_M = 5000  # geocoded point must be near its village
 
 def missing_input_paths(paths: dict[str, Path] | None = None) -> list[Path]:
     """Return raw input paths that do not exist (empty list means all good)."""

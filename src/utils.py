@@ -2166,3 +2166,30 @@ def plot_raster(
         return out_path
 
     return fig, ax
+
+_NAME_ABBREVIATIONS = {
+    "ghs": "government high school",
+    "ghss": "government higher secondary school",
+    "glps": "government lower primary school",
+    "gups": "government upper primary school",
+    "gvhss": "government vocational higher secondary school",
+    "vhss": "vocational higher secondary school",
+    "ups": "upper primary school",
+    "lps": "lower primary school",
+    "hss": "higher secondary school",
+    "hs": "high school",
+    "govt": "government",
+    "gov": "government",
+    "st": "saint",
+}
+
+
+def normalize_place_name(text: Any) -> str:
+    """Lowercase, drop brackets/punctuation and expand school abbreviations."""
+    import re
+
+    text = str(text if text is not None else "").lower()
+    text = re.sub(r"\(.*?\)", " ", text)
+    text = re.sub(r"[^a-z0-9 ]+", " ", text)
+    tokens = [_NAME_ABBREVIATIONS.get(tok, tok) for tok in text.split()]
+    return " ".join(" ".join(tokens).split())
