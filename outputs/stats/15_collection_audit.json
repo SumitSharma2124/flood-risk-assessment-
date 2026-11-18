@@ -1,0 +1,248 @@
+{
+  "project": "Alappuzha Flood Risk Assessment",
+  "collection_status": "completed",
+  "csv_files_found": 47,
+  "csv_files_read": 47,
+  "json_files_found": 46,
+  "json_files_read": 46,
+  "csv_inventory": [
+    {
+      "file": "stats\\08_routing_lambda_summary.csv",
+      "rows": 6,
+      "columns": 6
+    },
+    {
+      "file": "tables\\01_layer_summary.csv",
+      "rows": 12,
+      "columns": 12
+    },
+    {
+      "file": "tables\\03_feature_summary.csv",
+      "rows": 12,
+      "columns": 7
+    },
+    {
+      "file": "tables\\04_exposure_summary.csv",
+      "rows": 3,
+      "columns": 12
+    },
+    {
+      "file": "tables\\05_join_report.csv",
+      "rows": 90,
+      "columns": 28
+    },
+    {
+      "file": "tables\\05_vulnerability_summary.csv",
+      "rows": 173,
+      "columns": 18
+    },
+    {
+      "file": "tables\\06_camps_summary.csv",
+      "rows": 407,
+      "columns": 26
+    },
+    {
+      "file": "tables\\07_road_flood_by_class.csv",
+      "rows": 13,
+      "columns": 6
+    },
+    {
+      "file": "tables\\08_fuzzy_ahp_pairwise.csv",
+      "rows": 5,
+      "columns": 6
+    },
+    {
+      "file": "tables\\08_fuzzy_ahp_rule_summary.csv",
+      "rows": 5,
+      "columns": 7
+    },
+    {
+      "file": "tables\\08_fuzzy_ahp_weights.csv",
+      "rows": 5,
+      "columns": 5
+    },
+    {
+      "file": "tables\\08_routing_results.csv",
+      "rows": 176,
+      "columns": 17
+    },
+    {
+      "file": "tables\\09_baseline_validation_metrics.csv",
+      "rows": 2,
+      "columns": 4
+    },
+    {
+      "file": "tables\\09_log_transform_comparison.csv",
+      "rows": 4,
+      "columns": 4
+    },
+    {
+      "file": "tables\\09_simple_baseline_comparison.csv",
+      "rows": 4,
+      "columns": 4
+    },
+    {
+      "file": "tables\\09_xgb_error_by_feature_quantile.csv",
+      "rows": 32,
+      "columns": 9
+    },
+    {
+      "file": "tables\\09_xgb_feature_error_correlations.csv",
+      "rows": 10,
+      "columns": 6
+    },
+    {
+      "file": "tables\\09_xgb_feature_error_summary.csv",
+      "rows": 1,
+      "columns": 6
+    },
+    {
+      "file": "tables\\09_xgb_residual_diagnostics_summary.csv",
+      "rows": 1,
+      "columns": 10
+    },
+    {
+      "file": "tables\\09_xgb_residuals_by_block.csv",
+      "rows": 48,
+      "columns": 6
+    },
+    {
+      "file": "tables\\09_xgb_residuals_by_target_quantile.csv",
+      "rows": 5,
+      "columns": 7
+    },
+    {
+      "file": "tables\\09_xgb_shap_feature_importance.csv",
+      "rows": 10,
+      "columns": 4
+    },
+    {
+      "file": "tables\\10_all_models_test_error_by_quantile.csv",
+      "rows": 5,
+      "columns": 15
+    },
+    {
+      "file": "tables\\10_all_models_test_predictions.csv",
+      "rows": 10767,
+      "columns": 12
+    },
+    {
+      "file": "tables\\10_unet_patch_manifest.csv",
+      "rows": 880,
+      "columns": 8
+    },
+    {
+      "file": "tables\\10_unet_test_error_by_quantile.csv",
+      "rows": 5,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_test_predictions.csv",
+      "rows": 10767,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_training_history.csv",
+      "rows": 22,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_validation_error_by_quantile.csv",
+      "rows": 5,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_validation_predictions.csv",
+      "rows": 10771,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_weighted_training_history.csv",
+      "rows": 22,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_weighted_validation_error_by_quantile.csv",
+      "rows": 5,
+      "columns": 7
+    },
+    {
+      "file": "tables\\10_unet_weighted_validation_predictions.csv",
+      "rows": 10771,
+      "columns": 7
+    },
+    {
+      "file": "tables\\13_hazard_binary_metrics.csv",
+      "rows": 12,
+      "columns": 10
+    },
+    {
+      "file": "tables\\13_hazard_validation_metrics.csv",
+      "rows": 12,
+      "columns": 12
+    },
+    {
+      "file": "tables\\13_risk_validation_metrics.csv",
+      "rows": 12,
+      "columns": 12
+    },
+    {
+      "file": "tables\\13b_primary_component_comparison.csv",
+      "rows": 8,
+      "columns": 11
+    },
+    {
+      "file": "tables\\13b_risk_component_metrics.csv",
+      "rows": 32,
+      "columns": 12
+    },
+    {
+      "file": "tables\\13b_surface_distributions.csv",
+      "rows": 8,
+      "columns": 6
+    },
+    {
+      "file": "tables\\13c_exposure_component_metrics.csv",
+      "rows": 9,
+      "columns": 12
+    },
+    {
+      "file": "tables\\13c_exposure_weighted_contributions.csv",
+      "rows": 3,
+      "columns": 5
+    },
+    {
+      "file": "tables\\13d_landcover_exposure_audit.csv",
+      "rows": 9,
+      "columns": 22
+    },
+    {
+      "file": "tables\\13e_source_coverage_by_landcover.csv",
+      "rows": 36,
+      "columns": 16
+    },
+    {
+      "file": "tables\\14_agent_route_recommendations.csv",
+      "rows": 88,
+      "columns": 12
+    },
+    {
+      "file": "tables\\14_agent_village_advisories.csv",
+      "rows": 88,
+      "columns": 9
+    },
+    {
+      "file": "tables\\camps_summary.csv",
+      "rows": 6,
+      "columns": 4
+    },
+    {
+      "file": "tables\\task9_block_assignments.csv",
+      "rows": 82,
+      "columns": 3
+    }
+  ],
+  "missing_expected_files": [],
+  "errors": [],
+  "total_metrics_collected": 3719
+}

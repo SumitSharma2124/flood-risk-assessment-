@@ -1,0 +1,16 @@
+{
+  "origins_total": 88,
+  "origins_routed": 88,
+  "origins_skipped": 0,
+  "routes_changed": 8,
+  "lambda": 1.0,
+  "mean_hazard_shortest": 0.2399,
+  "mean_hazard_risk_aware": 0.229,
+  "high_hazard_share_shortest": 0.2422,
+  "high_hazard_share_risk_aware": 0.231,
+  "poorly_connected_origins": 9,
+  "mean_risk_route_length_m": 2672.99,
+  "mean_shortest_route_length_m": 2659.63,
+  "overall_assessment": "Risk-aware routing reduces average route hazard.",
+  "connectivity_warning": "Some origins have low-confidence road access."
+}
