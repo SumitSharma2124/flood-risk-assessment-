@@ -1,0 +1,32 @@
+{
+  "burn_depth_m": 5.0,
+  "district_cells": 176745,
+  "waterway_cells_regional": 112449,
+  "hand_fallback_regional_cells": 96820,
+  "hand_negative_cells_clipped": 127436,
+  "hand_drainage_cells_regional": 418023,
+  "flow_accumulation": {
+    "valid_cells": 176745,
+    "min": 1.0,
+    "mean": 1449.6669495601006,
+    "median": 2.0,
+    "p90": 52.0,
+    "max": 722452.0
+  },
+  "hand": {
+    "valid_cells": 176745,
+    "min": 0.0,
+    "mean": 2.941860810987141,
+    "median": 0.49848222732543945,
+    "p90": 8.525896644592288,
+    "max": 79.81465911865234
+  },
+  "twi": {
+    "valid_cells": 176745,
+    "min": 5.601260662078857,
+    "mean": 10.338974394786543,
+    "median": 9.649089813232422,
+    "p90": 13.586918067932132,
+    "max": 24.34099578857422
+  }
+}

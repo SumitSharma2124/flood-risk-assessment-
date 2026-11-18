@@ -1,0 +1,69 @@
+{
+    "task": "Task 13C - Exposure component audit",
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "common_validation_cells": 71799,
+    "flood_fraction_threshold": 0.5,
+    "flooded_cells": 28400,
+    "non_flooded_cells": 43399,
+    "exposure_configuration": {
+        "weights": {
+            "population": 0.5,
+            "buildings": 0.3,
+            "facilities": 0.2
+        },
+        "building_metric": "count",
+        "cap_percentile": 99,
+        "log_scaling": false
+    },
+    "recalculated_scaling": {
+        "building": {
+            "lower_value": 0.0,
+            "upper_value": 24.0,
+            "valid_values": 176745
+        },
+        "facility": {
+            "lower_value": 0.0,
+            "upper_value": 0.03451327607035637,
+            "valid_values": 176745
+        }
+    },
+    "reconstruction_check": {
+        "mean_absolute_difference": 0.0,
+        "maximum_absolute_difference": 0.0,
+        "pearson_correlation": 1.0
+    },
+    "weighted_component_contributions": [
+        {
+            "component": "population",
+            "weight": 0.5,
+            "flooded_mean_contribution": 0.016495363786816597,
+            "non_flooded_mean_contribution": 0.09377121180295944,
+            "difference": -0.077275849878788
+        },
+        {
+            "component": "buildings",
+            "weight": 0.3,
+            "flooded_mean_contribution": 0.001380721922032535,
+            "non_flooded_mean_contribution": 0.04664767533540726,
+            "difference": -0.045266952365636826
+        },
+        {
+            "component": "facilities",
+            "weight": 0.2,
+            "flooded_mean_contribution": 0.0053335754200816154,
+            "non_flooded_mean_contribution": 0.019222721457481384,
+            "difference": -0.013889146037399769
+        }
+    ],
+    "outputs": {
+        "component_metrics": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13c_exposure_component_metrics.csv",
+        "weighted_contributions": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13c_exposure_weighted_contributions.csv"
+    },
+    "limitations": [
+        "The audit uses 2018 observed flood extent, not a 100-year flood event.",
+        "ROC-AUC and Average Precision describe spatial association, not causal effects.",
+        "Current buildings and facilities may not represent their exact 2018 locations.",
+        "The independent scaling reconstruction must be checked against the project's actual utils.robust_scale implementation before drawing conclusions."
+    ]
+}

@@ -1,0 +1,26 @@
+{
+  "district_cells": 176745,
+  "fallback_cells": 124,
+  "fallback_percentage": 0.07015757164276218,
+  "normal_hand_cells": 176621,
+  "normal_percentage": 99.92984242835725,
+  "regional_fallback_cells": 96820,
+  "regional_drainage_cells": 418023,
+  "regional_negative_cells_clipped": 127436,
+  "fallback_hand_final": {
+    "valid_cells": 124,
+    "mean": 0.9066819548606873,
+    "median": 0.022794803604483604,
+    "p90": 3.972954511642456,
+    "min": 0.0,
+    "max": 7.722937107086182
+  },
+  "normal_hand_final": {
+    "valid_cells": 176621,
+    "mean": 2.9432897567749023,
+    "median": 0.49994975328445435,
+    "p90": 8.530068397521973,
+    "min": 0.0,
+    "max": 79.81465911865234
+  }
+}

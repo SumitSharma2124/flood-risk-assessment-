@@ -1,0 +1,42 @@
+{
+  "grid": {
+    "height": 982,
+    "width": 533
+  },
+  "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\processed\\pop2018_90m.tif",
+  "task3_population_total": 2703786.0,
+  "census_2011_population": 2127789.0,
+  "relative_to_task3": 9.24629390047881e-08,
+  "relative_to_census_2011": 0.27070224068269927,
+  "cleaned": {
+    "district_cells": 176745,
+    "district_population_total": 2703786.25,
+    "nonzero_cells": 146016,
+    "zero_cells": 30729,
+    "min": 0.0,
+    "max": 100.37920379638672,
+    "mean": 15.297667503356934,
+    "source_nodata": -9999.0
+  },
+  "scale": {
+    "method": "percentile_cap",
+    "log1p": false,
+    "lower_percentile": 0.0,
+    "upper_percentile": 99.0,
+    "lower_value": 0.0,
+    "upper_value": 67.97049499511716,
+    "valid_values": 176745,
+    "zero_filled_cells": 0,
+    "min": 0.0,
+    "max": 1.0,
+    "mean": 0.2234518676996231
+  },
+  "settings": {
+    "cap_percentile": 99.0,
+    "log1p": false
+  },
+  "checks": {
+    "matches_task3": true,
+    "within_25_percent_of_census_2011": false
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "grid": {
+    "height": 982,
+    "width": 533,
+    "bands": 12
+  },
+  "bands": [
+    {
+      "index": 1,
+      "name": "elevation",
+      "units": "m",
+      "description": "Alappuzha 90 m DEM"
+    },
+    {
+      "index": 2,
+      "name": "slope",
+      "units": "degrees",
+      "description": "Slope from averaged 30 m DEM"
+    },
+    {
+      "index": 3,
+      "name": "twi",
+      "units": "index",
+      "description": "Topographic wetness index"
+    },
+    {
+      "index": 4,
+      "name": "log_flow_accumulation",
+      "units": "log(cells)",
+      "description": "log1p(D8 accumulation)"
+    },
+    {
+      "index": 5,
+      "name": "hand",
+      "units": "m",
+      "description": "Height above nearest drainage"
+    },
+    {
+      "index": 6,
+      "name": "distance_waterway",
+      "units": "m",
+      "description": "Distance to nearest waterway line"
+    },
+    {
+      "index": 7,
+      "name": "trees",
+      "units": "fraction",
+      "description": "ESA WorldCover trees fraction"
+    },
+    {
+      "index": 8,
+      "name": "cropland",
+      "units": "fraction",
+      "description": "ESA WorldCover cropland fraction"
+    },
+    {
+      "index": 9,
+      "name": "builtup",
+      "units": "fraction",
+      "description": "ESA WorldCover builtup fraction"
+    },
+    {
+      "index": 10,
+      "name": "water",
+      "units": "fraction",
+      "description": "ESA WorldCover water fraction"
+    },
+    {
+      "index": 11,
+      "name": "wetland",
+      "units": "fraction",
+      "description": "ESA WorldCover wetland fraction"
+    },
+    {
+      "index": 12,
+      "name": "mangrove",
+      "units": "fraction",
+      "description": "ESA WorldCover mangrove fraction"
+    }
+  ],
+  "valid_mask_cells": 176745,
+  "district_cells": 176745,
+  "feature_valid_cells": 523406,
+  "band_stats": {
+    "elevation": {
+      "full": {
+        "valid_cells": 523406,
+        "min": -7.254611492156982,
+        "max": 390.9185791015625,
+        "mean": 20.17848035654911
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": -7.254611492156982,
+        "max": 113.12560272216797,
+        "mean": 7.82164684770892
+      }
+    },
+    "slope": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 36.4050178527832,
+        "mean": 2.159650248202005
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 18.75335121154785,
+        "mean": 1.07690630436927
+      }
+    },
+    "twi": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 4.931225776672363,
+        "max": 24.341615676879883,
+        "mean": 10.177748597794318
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 5.601260662078857,
+        "max": 24.34099578857422,
+        "mean": 10.338974394786543
+      }
+    },
+    "log_flow_accumulation": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.6931471824645996,
+        "max": 13.490997314453125,
+        "mean": 1.8745206742383833
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.6931471824645996,
+        "max": 13.490407943725586,
+        "mean": 1.757052013668273
+      }
+    },
+    "hand": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 310.23211669921875,
+        "mean": 8.69362037655378
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 79.81465911865234,
+        "mean": 2.941860810987141
+      }
+    },
+    "distance_waterway": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 21589.685546875,
+        "mean": 1529.0065676859033
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 2448.2646484375,
+        "mean": 270.3977205920258
+      }
+    },
+    "trees": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.5849621832535392
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.573380048315289
+      }
+    },
+    "cropland": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.08906712749190922
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.14993632412202246
+      }
+    },
+    "builtup": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.03252264346941535
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.04400109327688368
+      }
+    },
+    "water": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.23598265204609092
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.13598213162648315
+      }
+    },
+    "wetland": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.03842406648396086
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.07509598427393022
+      }
+    },
+    "mangrove": {
+      "full": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.0002966353415124752
+      },
+      "district": {
+        "valid_cells": 176745,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.0005669236532287324
+      }
+    }
+  },
+  "ksdma_link_check": {
+    "modelled_cells": 71799,
+    "unmodelled_cells": 104946,
+    "hand": {
+      "modelled_median": 0.0,
+      "unmodelled_median": 1.616504430770874,
+      "difference": -1.616504430770874
+    },
+    "twi": {
+      "modelled_median": 9.86716079711914,
+      "unmodelled_median": 9.509499549865723,
+      "difference": 0.35766124725341797
+    },
+    "skipped": false,
+    "warn_hand_m": 5.0,
+    "warn_twi": 1.0
+  },
+  "landcover_bands": {
+    "trees": 1,
+    "cropland": 2,
+    "builtup": 3,
+    "water": 4,
+    "wetland": 5,
+    "mangrove": 6
+  },
+  "terrain_stats": {
+    "regional_grid": {
+      "height": 2474,
+      "width": 2453,
+      "bounds": [
+        609120.0,
+        995040.0,
+        829890.0,
+        1217700.0
+      ]
+    },
+    "alappuzha_grid": {
+      "height": 982,
+      "width": 533,
+      "bounds": [
+        639000.0,
+        1006380.0,
+        686970.0,
+        1094760.0
+      ]
+    },
+    "flow_routing": {
+      "resolve_flats_eps": 1e-07,
+      "pits": 955,
+      "flats": 2839,
+      "accumulation_cells": {
+        "valid_cells": 6068722,
+        "min": 1.0,
+        "max": 944085.0,
+        "mean": 821.4831995929292
+      }
+    },
+    "waterways": {
+      "regional_cells": 112449,
+      "alappuzha_cells": 60864
+    },
+    "streams": {
+      "threshold_cells": 1000,
+      "alappuzha_cells": 64496
+    },
+    "hand": {
+      "nan_cells_filled": 96820,
+      "negative_cells_clipped": 127436,
+      "drainage_cells": 418023,
+      "threshold_cells": 250,
+      "alappuzha": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 310.23211669921875,
+        "mean": 8.69362037655378
+      }
+    },
+    "slope": {
+      "valid_cells": 523406,
+      "void_cells": 0,
+      "alappuzha": {
+        "valid_cells": 523406,
+        "min": 0.0,
+        "max": 36.4050178527832,
+        "mean": 2.159650248202005
+      }
+    },
+    "twi": {
+      "minimum_slope_deg": 0.1,
+      "alappuzha": {
+        "valid_cells": 523406,
+        "min": 4.931225776672363,
+        "max": 24.341615676879883,
+        "mean": 10.177748597794318
+      }
+    },
+    "log_flow_accumulation": {
+      "alappuzha": {
+        "valid_cells": 523406,
+        "min": 0.6931471824645996,
+        "max": 13.490997314453125,
+        "mean": 1.8745206742383833
+      }
+    }
+  },
+  "waterway_distance_stats": {
+    "waterway_lines": 18216,
+    "waterway_cells": 60864,
+    "distance_waterway": {
+      "valid_cells": 523406,
+      "min": 0.0,
+      "max": 21589.685546875,
+      "mean": 1529.0065676859033
+    },
+    "distance_waterway_district": {
+      "valid_cells": 176745,
+      "min": 0.0,
+      "max": 2448.2646484375,
+      "mean": 270.3977205920258
+    },
+    "permanent_water_band": 4,
+    "permanent_water_threshold": 0.5,
+    "permanent_water_cells": 121959,
+    "distance_permanent_water": {
+      "valid_cells": 523406,
+      "min": 0.0,
+      "max": 11384.5556640625,
+      "mean": 1584.1604547237105
+    },
+    "distance_permanent_water_district": {
+      "valid_cells": 176745,
+      "min": 0.0,
+      "max": 5355.5673828125,
+      "mean": 930.4470538155342
+    }
+  }
+}

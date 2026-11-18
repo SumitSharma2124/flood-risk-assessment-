@@ -1,0 +1,107 @@
+{
+  "grid": {
+    "height": 982,
+    "width": 533,
+    "resolution_m": 90.0
+  },
+  "weights": {
+    "population": 0.5,
+    "buildings": 0.3,
+    "facilities": 0.2
+  },
+  "building_metric": "count",
+  "building_scale": {
+    "method": "percentile_cap",
+    "log1p": false,
+    "lower_percentile": 0.0,
+    "upper_percentile": 99.0,
+    "lower_value": 0.0,
+    "upper_value": 24.0,
+    "valid_values": 176745,
+    "zero_filled_cells": 0,
+    "min": 0.0,
+    "max": 1.0,
+    "mean": 0.18395523726940155
+  },
+  "facility_scale": {
+    "method": "percentile_cap",
+    "log1p": false,
+    "lower_percentile": 0.0,
+    "upper_percentile": 99.0,
+    "lower_value": 0.0,
+    "upper_value": 0.03451327607035637,
+    "valid_values": 176745,
+    "zero_filled_cells": 0,
+    "min": 0.0,
+    "max": 1.0,
+    "mean": 0.09973189234733582
+  },
+  "district": {
+    "cells": 176745,
+    "area_km2": 1431.6345,
+    "population": 2703786.25,
+    "buildings": 791918,
+    "building_area_m2": 68135856.0
+  },
+  "exposure_score": {
+    "min": 0.0,
+    "max": 1.0,
+    "mean": 0.1868588924407959,
+    "p50": 0.1463576704263687,
+    "p95": 0.5582493543624878,
+    "nonzero_cells": 147437,
+    "zero_cells": 29308
+  },
+  "checks": {
+    "same_grid": true,
+    "district_cells_with_zero_population": 30729,
+    "district_cells_without_buildings": 65856,
+    "population_building_pearson_1km": 0.9305598776690527,
+    "score_within_0_1": true
+  },
+  "summary": [
+    {
+      "mask": "district",
+      "cells": 176745,
+      "area_km2": 1431.6345,
+      "population": 2703786.25,
+      "population_share_of_district": 1.0,
+      "buildings": 791918,
+      "buildings_share_of_district": 1.0,
+      "building_area_m2": 68135856.0,
+      "facility_score_sum": 631.8342895507812,
+      "mean_exposure": 0.1868588924407959,
+      "p95_exposure": 0.5582493543624878,
+      "max_exposure": 1.0
+    },
+    {
+      "mask": "ksdma_modelled",
+      "cells": 71799,
+      "area_km2": 581.5718999999999,
+      "population": 617010.0625,
+      "population_share_of_district": 0.22820223399686274,
+      "buildings": 165537,
+      "buildings_share_of_district": 0.20903300594253446,
+      "building_area_m2": 13746356.0,
+      "facility_score_sum": 172.6000518798828,
+      "mean_exposure": 0.10567613691091537,
+      "p95_exposure": 0.356198251247406,
+      "max_exposure": 1.0
+    },
+    {
+      "mask": "flood_2018",
+      "cells": 29929,
+      "area_km2": 242.42489999999998,
+      "population": 67807.4765625,
+      "population_share_of_district": 0.02507871195901673,
+      "buildings": 3292,
+      "buildings_share_of_district": 0.00415699605262161,
+      "building_area_m2": 213878.984375,
+      "facility_score_sum": 27.468059539794922,
+      "mean_exposure": 0.02335429936647415,
+      "p95_exposure": 0.09337804466485977,
+      "max_exposure": 0.4593676030635834
+    }
+  ],
+  "caveat": "Population is 2018 WorldPop; buildings and facilities are current OSM/Google features. Exposure is a relative index, not a probability."
+}

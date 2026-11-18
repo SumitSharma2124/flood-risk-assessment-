@@ -1,0 +1,55 @@
+{
+    "method": "Hazard x Exposure x Vulnerability",
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "hazard_normalisation": {
+        "method": "Min-max using KSDMA modelled cells",
+        "reference_minimum": 0.809999942779541,
+        "reference_maximum": 1087.0,
+        "clipping": "Values outside reference range clipped to 0-1"
+    },
+    "valid_cells": {
+        "full_district": 176745,
+        "ksdma_reference": 71799,
+        "outside_ksdma_reference": 104946
+    },
+    "clipped_prediction_cells": {
+        "xgboost": 0,
+        "unet": 0
+    },
+    "risk_statistics": {
+        "ksdma": {
+            "valid_cells": 71799,
+            "minimum": 0.0,
+            "maximum": 0.19155286252498627,
+            "mean": 0.01050727441906929,
+            "median": 0.006010187324136496
+        },
+        "xgboost": {
+            "valid_cells": 176745,
+            "minimum": 0.0,
+            "maximum": 0.13128040730953217,
+            "mean": 0.015186810865998268,
+            "median": 0.012247168458998203
+        },
+        "unet": {
+            "valid_cells": 176745,
+            "minimum": 0.0,
+            "maximum": 0.09912234544754028,
+            "mean": 0.012929822318255901,
+            "median": 0.010427035391330719
+        }
+    },
+    "outputs": {
+        "ksdma": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\rasters\\11_ksdma_reference_risk.tif",
+        "xgb": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\rasters\\11_xgb_integrated_risk.tif",
+        "unet": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\rasters\\11_unet_integrated_risk.tif"
+    },
+    "limitations": [
+        "KSDMA hazard values are treated as a relative index; units are unconfirmed.",
+        "XGBoost and U-Net predictions outside the KSDMA modelled mask are extrapolations.",
+        "Risk scores are relative indices, not flood probabilities or expected losses.",
+        "Full-district model risk statistics include extrapolated cells.",
+        "For direct model comparison, use the common KSDMA reference domain."
+    ]
+}

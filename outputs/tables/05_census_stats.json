@@ -1,0 +1,129 @@
+{
+  "inputs": {
+    "pca": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\DDW_PCA3211_2011_MDDS with UI.xlsx",
+    "pca_sc": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\PCA_SC3211_2011_MDDS_DDW.xlsx",
+    "pca_st": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\PCA_ST3211_2011_MDDS_DDW.xlsx",
+    "hlpca": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\HLPCA-32598-2011_H14_census.xlsx"
+  },
+  "hlpca_selected": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\HLPCA-32598-2011_H14_census.xlsx",
+  "hlpca_candidates": [
+    {
+      "path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\HLPCA-32597-2011_H14_census.xlsx",
+      "exists": true,
+      "district_code": 597,
+      "district_name": "Kottayam"
+    },
+    {
+      "path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\HLPCA-32598-2011_H14_census.xlsx",
+      "exists": true,
+      "district_code": 598,
+      "district_name": "Alappuzha"
+    }
+  ],
+  "hlpca": {
+    "path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\census_2011_vulnerability_indicators\\HLPCA-32598-2011_H14_census.xlsx",
+    "rows": 296,
+    "area_rows": 89,
+    "ward_rows": 207
+  },
+  "indicators": {
+    "child_share": {
+      "label": "Children aged 0-6 share",
+      "definition": "P_06 / TOT_P",
+      "direction": 1
+    },
+    "scst_share": {
+      "label": "Scheduled caste and scheduled tribe share",
+      "definition": "(P_SC + P_ST) / TOT_P",
+      "direction": 1
+    },
+    "worker_fragility": {
+      "label": "Marginal or non-worker share",
+      "definition": "(MARGWORK_P + NON_WORK_P) / TOT_P",
+      "direction": 1
+    },
+    "housing_deprivation": {
+      "label": "Housing deprivation",
+      "definition": "mean(no latrine within premises, temporary structure), HLPCA",
+      "direction": 1
+    }
+  },
+  "cleaning": {
+    "levels_kept": [
+      "VILLAGE",
+      "TOWN",
+      "WARD"
+    ],
+    "area_levels": [
+      "VILLAGE",
+      "TOWN"
+    ],
+    "duplicate_area_rule": "keep largest population per area code"
+  },
+  "fill": {
+    "method": "subdistrict_median",
+    "details": {
+      "child_share": {
+        "filled_rows": 1,
+        "subdistrict_fill_rows": 1,
+        "district_median_fallback_rows": 0,
+        "district_median": 0.0869374355842272,
+        "filled_values": {
+          "0.09359220119337427": 1
+        }
+      },
+      "scst_share": {
+        "filled_rows": 1,
+        "subdistrict_fill_rows": 1,
+        "district_median_fallback_rows": 0,
+        "district_median": 0.06726340725426747,
+        "filled_values": {
+          "0.021715651135005974": 1
+        }
+      },
+      "worker_fragility": {
+        "filled_rows": 1,
+        "subdistrict_fill_rows": 1,
+        "district_median_fallback_rows": 0,
+        "district_median": 0.7290328718729356,
+        "filled_values": {
+          "0.7021425043891358": 1
+        }
+      },
+      "housing_deprivation": {
+        "filled_rows": 1,
+        "subdistrict_fill_rows": 1,
+        "district_median_fallback_rows": 0,
+        "district_median": 0.028249999999999997,
+        "filled_values": {
+          "0.01675": 1
+        }
+      }
+    }
+  },
+  "checks": {
+    "area_rows": 90,
+    "village_rows": 52,
+    "town_rows": 38,
+    "ward_rows": 207,
+    "census_reference_population": 2127789,
+    "pca_area_population": 2127789.0,
+    "population_matches_reference": true,
+    "pca_sc_population": 201211.0,
+    "sc_file_district_total": 201211.0,
+    "sc_total_matches_pca": true,
+    "pca_st_population": 6574.0,
+    "st_file_district_total": 6574.0,
+    "st_total_matches_pca": true,
+    "pca_town_sc_population": 89280.0,
+    "sc_file_town_total": 89280.0,
+    "town_sc_matches_file": true,
+    "pca_town_st_population": 3613.0,
+    "st_file_town_total": 3613.0,
+    "town_st_matches_file": true,
+    "housing_area_rows": 90,
+    "housing_ward_rows": 207,
+    "zero_population_rows": 1,
+    "filled_rows": 1
+  }
+}

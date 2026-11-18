@@ -1,0 +1,67 @@
+{
+    "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\flood_extent\\kerala_flood_2018_s1.tif",
+    "source_crs": "EPSG:4326",
+    "source_resolution": [
+        0.00026949458523585647,
+        0.00026949458523585647
+    ],
+    "source_valid_pixels": 14404824,
+    "source_flooded_pixels": 675123,
+    "target_crs": "EPSG:32643",
+    "target_resolution": [
+        90.0,
+        90.0
+    ],
+    "target_shape": [
+        982,
+        533
+    ],
+    "resampling": "average",
+    "coverage_requirement": 0.99,
+    "district_cells": 176745,
+    "district_cells_with_valid_flood_coverage": 176745,
+    "district_cells_without_sufficient_coverage": 0,
+    "common_ksdma_validation_cells": 71799,
+    "flood_fraction_statistics": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "mean": 0.16969336569309235,
+        "median": 0.0
+    },
+    "threshold_sensitivity": {
+        "0.1": {
+            "district_flood_cells": 38740,
+            "district_flood_share": 0.2191858326968231,
+            "common_domain_flood_cells": 35921,
+            "common_domain_flood_share": 0.500299447067508
+        },
+        "0.25": {
+            "district_flood_cells": 35047,
+            "district_flood_share": 0.1982913236583779,
+            "common_domain_flood_cells": 32864,
+            "common_domain_flood_share": 0.4577222523990585
+        },
+        "0.5": {
+            "district_flood_cells": 29929,
+            "district_flood_share": 0.16933435174969588,
+            "common_domain_flood_cells": 28400,
+            "common_domain_flood_share": 0.39554868452206854
+        },
+        "0.75": {
+            "district_flood_cells": 24998,
+            "district_flood_share": 0.14143540128433618,
+            "common_domain_flood_cells": 23945,
+            "common_domain_flood_share": 0.3335004665803145
+        }
+    },
+    "outputs": {
+        "flood_fraction": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\processed\\12_2018_flood_fraction_90m.tif",
+        "coverage": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\processed\\12_2018_flood_coverage_90m.tif"
+    },
+    "limitations": [
+        "Flood extent is an observed 2018 event, not a 100-year return-period map.",
+        "Average resampling represents the fraction of source pixels classified as flooded.",
+        "A 0.5 threshold is provisional; threshold sensitivity is retained.",
+        "Only cells with at least 99% source coverage are used."
+    ]
+}

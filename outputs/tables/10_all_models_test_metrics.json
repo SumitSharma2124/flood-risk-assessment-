@@ -1,0 +1,87 @@
+{
+    "task": "Final RF, XGBoost and U-Net test comparison",
+    "test_cells": 10767,
+    "feature_names": [
+        "elevation",
+        "slope",
+        "twi",
+        "distance_waterway",
+        "trees",
+        "cropland",
+        "builtup",
+        "water",
+        "wetland",
+        "mangrove"
+    ],
+    "selected_bands_1_based": [
+        1,
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    "spatial_split": "Task 9 test split, value 3",
+    "ground_truth": "ksdma_100yr_90m.tif",
+    "all_models_evaluated_on_same_cells": true,
+    "test_used_for_training_or_tuning": false,
+    "unet_actual_value_diagnostic": {
+        "max_absolute_difference": 1.5000000001208491e-05,
+        "mean_absolute_difference": 3.929079594966331e-07,
+        "median_absolute_difference": 0.0,
+        "cells_difference_gt_0.00001": 280,
+        "cells_difference_gt_0.01": 0,
+        "cells_difference_gt_1": 0
+    },
+    "metrics": {
+        "random_forest": {
+            "MAE": 89.68876855966008,
+            "RMSE": 114.86024116416682,
+            "R2": 0.1466720871178312,
+            "mean_actual": 219.66343456848293,
+            "mean_predicted": 247.1826777855472,
+            "actual_std": 124.34025332716159,
+            "predicted_std": 84.60159528719225,
+            "mean_residual": 27.519243217064282,
+            "median_absolute_error": 73.19295634920638,
+            "underprediction_cells": 4142,
+            "overprediction_cells": 6625,
+            "test_cells": 10767
+        },
+        "xgboost": {
+            "MAE": 90.85859335074466,
+            "RMSE": 114.14201349040967,
+            "R2": 0.15731053811013562,
+            "mean_actual": 219.66343456848293,
+            "mean_predicted": 255.17717533956568,
+            "actual_std": 124.34025332716159,
+            "predicted_std": 56.371253510418214,
+            "mean_residual": 35.513740771082745,
+            "median_absolute_error": 75.95590209960938,
+            "underprediction_cells": 4029,
+            "overprediction_cells": 6738,
+            "test_cells": 10767
+        },
+        "unet": {
+            "MAE": 86.33331330056139,
+            "RMSE": 112.04617735888306,
+            "R2": 0.18797276933884788,
+            "mean_actual": 219.66343456848293,
+            "mean_predicted": 230.14256944106992,
+            "actual_std": 124.34025332716159,
+            "predicted_std": 72.76136730127273,
+            "mean_residual": 10.479134872587016,
+            "median_absolute_error": 68.1326,
+            "underprediction_cells": 4789,
+            "overprediction_cells": 5978,
+            "test_cells": 10767
+        }
+    },
+    "best_model_by_MAE": "unet",
+    "best_model_by_RMSE": "unet",
+    "best_model_by_R2": "unet"
+}

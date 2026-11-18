@@ -1,0 +1,21 @@
+{
+  "camps_total": 407,
+  "camps_located": 407,
+  "camps_unlocated": 0,
+  "method_share": {
+    "source": 0.941,
+    "centroid": 0.044,
+    "osm": 0.012,
+    "nominatim": 0.002
+  },
+  "inside_district_500m_tolerance": 407,
+  "in_flood_2018": 6,
+  "in_ksdma_100yr": 101,
+  "unsafe_total": 101,
+  "ksdma_modelled_at_camp": 101,
+  "camps_sharing_coordinates": 76,
+  "checks": {
+    "precise_methods_at_least_60pct": true,
+    "all_inside_district": true
+  }
+}

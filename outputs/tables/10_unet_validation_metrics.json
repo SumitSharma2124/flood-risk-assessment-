@@ -1,0 +1,27 @@
+{
+    "task": "Task 10 \u2014 U-Net",
+    "best_epoch": 7,
+    "epochs_completed": 22,
+    "best_validation_metrics": {
+        "MAE": 98.8387432670363,
+        "RMSE": 134.7527475170135,
+        "R2": -0.027332470004648446,
+        "supervised_pixels": 10771,
+        "validation_loss": 0.5723723688950906
+    },
+    "model_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\models\\task10_unet_best.pt",
+    "history_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\10_unet_training_history.csv",
+    "train_patches": 477,
+    "validation_patches": 208,
+    "test_split_used": false,
+    "target_normalisation": {
+        "mean": 270.157498,
+        "std": 113.758504
+    },
+    "model_config": {
+        "input_channels": 10,
+        "base_channels": 16,
+        "patch_size": 16,
+        "batch_size": 16
+    }
+}

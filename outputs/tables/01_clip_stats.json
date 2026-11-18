@@ -1,0 +1,137 @@
+{
+  "district": {
+    "name": "Alappuzha",
+    "area_km2": 1431.885825613336,
+    "buffered_area_km2": 1707.665791836226,
+    "buffer_m": 1000,
+    "buffered_bounds_wgs84": [
+      76.26538953310629,
+      9.100402239946686,
+      76.70515410323239,
+      9.901038614027275
+    ]
+  },
+  "rasters": {
+    "dem_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\elevation\\Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\dem_clip.tif",
+      "shape": [
+        961,
+        528
+      ],
+      "dtype": "float32",
+      "nodata": null,
+      "bounds_wgs84": [
+        76.26541666666667,
+        9.100416666666666,
+        76.70541666666666,
+        9.90125
+      ]
+    },
+    "landcover_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\land_cover\\ESA_WorldCover_10m_2021_v200_N09E075_Map.tif",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\landcover_clip.tif",
+      "shape": [
+        9608,
+        5277
+      ],
+      "dtype": "uint8",
+      "nodata": 0.0,
+      "bounds_wgs84": [
+        76.26533333333333,
+        9.100416666666666,
+        76.70508333333333,
+        9.901083333333332
+      ]
+    },
+    "ksdma_100yr_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\flood_probability\\2.Flood Return Probability History (100, 200, 500 years)\\Kerala_Flood_100_yr_Historical.tif",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\ksdma_100yr_clip.tif",
+      "shape": [
+        961,
+        528
+      ],
+      "dtype": "float32",
+      "nodata": -3.4028230607370965e+38,
+      "bounds_wgs84": [
+        76.26545488506667,
+        9.100891618293339,
+        76.70545488506667,
+        9.901724951626676
+      ]
+    },
+    "flood2018_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\flood_extent\\kerala_flood_2018_s1.tif",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\flood2018_clip.tif",
+      "shape": [
+        2971,
+        1632
+      ],
+      "dtype": "uint8",
+      "nodata": null,
+      "bounds_wgs84": [
+        76.26535065423596,
+        9.100562648829637,
+        76.70516581734088,
+        9.901231061565367
+      ]
+    },
+    "pop2018_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\population_count_100m\\ind_pop_2018_CN_100m_R2025A_v1.tif",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\pop2018_clip.tif",
+      "shape": [
+        961,
+        528
+      ],
+      "dtype": "float32",
+      "nodata": -99999.0,
+      "bounds_wgs84": [
+        76.26499897494,
+        9.100833632929984,
+        76.70499897318,
+        9.901666963059984
+      ]
+    }
+  },
+  "vectors": {
+    "roads_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\roads\\Alappuzha_roads.gpkg",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\roads_clip.gpkg",
+      "source_features": 33128,
+      "clipped_features": 33128,
+      "duplicates_dropped": 0
+    },
+    "waterways_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\waterways\\Alappuzha_waterways.gpkg",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\waterways_clip.gpkg",
+      "source_features": 9217,
+      "clipped_features": 9217,
+      "duplicates_dropped": 0
+    },
+    "facilities_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\critical_facilities\\critical_facilities.gpkg",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\facilities_clip.gpkg",
+      "source_features": 3675,
+      "clipped_features": 1285,
+      "duplicates_dropped": 0,
+      "layers": [
+        "critical_facilities"
+      ]
+    },
+    "villages_clip": {
+      "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\village_boundaries\\kl.geojson",
+      "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\villages_clip.gpkg",
+      "source_features": 1533,
+      "clipped_features": 128,
+      "duplicates_dropped": 0
+    }
+  },
+  "buildings": {
+    "source": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\Building_footprints\\3b1_buildings.csv",
+    "output": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\buildings_clip.gpkg",
+    "csv_rows": 16329277,
+    "bbox_rows": 2251161,
+    "clip_candidates": 1111252,
+    "clipped_features": 1111252
+  }
+}

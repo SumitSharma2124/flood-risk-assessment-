@@ -1,0 +1,2 @@
+validation_cells,MAE,RMSE,R2,mean_residual,median_absolute_error,underprediction_cells,overprediction_cells,moran_i_4_neighbour,neighbour_edges
+10771,98.33873567801643,129.85322242345316,0.046015717037235504,-29.202933427185393,78.48683166503906,3674,7097,0.5881890560988882,17229

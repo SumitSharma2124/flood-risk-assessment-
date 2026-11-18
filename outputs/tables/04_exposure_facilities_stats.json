@@ -1,0 +1,99 @@
+{
+  "raw_features": 1285,
+  "excluded_features": 14,
+  "exposed_features": 1271,
+  "inside_district": 1184,
+  "after_deduplication": 1031,
+  "deduplication": {
+    "input_points": 1184,
+    "output_points": 1031,
+    "removed": 153,
+    "radius_m": 50.0,
+    "group_column": "_category"
+  },
+  "excluded_reasons": {
+    "dam": 1,
+    "water": 11,
+    "reservoir_landuse": 2,
+    "unmapped": 0
+  },
+  "category_counts_source": {
+    "hospital": 257,
+    "fire_station": 10,
+    "police": 47,
+    "substation": 24,
+    "power_plant": 3,
+    "school": 767,
+    "college": 63,
+    "clinic": 74,
+    "water_tower": 12,
+    "pump_house": 13,
+    "water_point": 1
+  },
+  "category_counts": {
+    "hospital": 203,
+    "fire_station": 9,
+    "police": 42,
+    "substation": 24,
+    "power_plant": 3,
+    "school": 597,
+    "college": 59,
+    "clinic": 72,
+    "water_tower": 12,
+    "pump_house": 9,
+    "water_point": 1
+  },
+  "category_order": [
+    "hospital",
+    "fire_station",
+    "police",
+    "substation",
+    "power_plant",
+    "school",
+    "college",
+    "clinic",
+    "water_tower",
+    "pump_house",
+    "water_point"
+  ],
+  "category_weights": {
+    "hospital": 1.0,
+    "fire_station": 0.9,
+    "police": 0.8,
+    "substation": 0.8,
+    "power_plant": 0.8,
+    "school": 0.5,
+    "college": 0.5,
+    "clinic": 0.4,
+    "water_tower": 0.3,
+    "pump_house": 0.3,
+    "water_point": 0.2
+  },
+  "dedup_radius_m": 50.0,
+  "smoothing_radius_m": 500.0,
+  "coverage": {
+    "excluded_fraction": 0.010894941634241245,
+    "inside_fraction_of_exposed": 0.9315499606608969
+  },
+  "grid": {
+    "height": 982,
+    "width": 533
+  },
+  "score_raw": {
+    "min": 0.0,
+    "max": 1.899999976158142,
+    "mean": 0.003562194062396884,
+    "nonzero_cells": 1008
+  },
+  "score_smoothed": {
+    "min": 0.0,
+    "max": 0.08849557489156723,
+    "mean": 0.003574835369363427,
+    "nonzero_cells": 57697
+  },
+  "checks": {
+    "has_facilities": true,
+    "score_nonzero": true
+  },
+  "caveat": "Facilities are sparse and point-based; the 500 m smoothed score spreads local service access across nearby cells."
+}

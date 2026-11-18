@@ -1,0 +1,42 @@
+{
+    "task": "Task 10 \u2014 Weighted U-Net validation diagnostics",
+    "checkpoint_epoch": 7,
+    "validation_metrics": {
+        "MAE": 99.0344232543798,
+        "RMSE": 135.0837960094677,
+        "R2": -0.032386387368002145,
+        "mean_actual": 234.20388080942942,
+        "mean_predicted": 236.65148756632664,
+        "median_actual": 236.0,
+        "median_predicted": 237.02037048339844,
+        "actual_std": 132.9480958629955,
+        "predicted_std": 75.40589268941547,
+        "mean_residual": 2.4476067568972275,
+        "median_absolute_error": 76.35780334472656,
+        "underprediction_cells": 4379,
+        "overprediction_cells": 6392,
+        "supervised_cells": 10771
+    },
+    "prediction_mean_difference": 2.4475860595703125,
+    "prediction_to_actual_std_ratio": 0.5671829581260681,
+    "loss_config": {
+        "name": "tail_weighted_huber",
+        "quantile_boundaries_normalised": [
+            -0.8364868760108948,
+            -0.13324280083179474,
+            0.35023751854896545,
+            0.7897651195526123
+        ],
+        "quantile_weights": [
+            1.5,
+            1.0,
+            0.75,
+            0.75,
+            1.5
+        ]
+    },
+    "test_split_used": false,
+    "model_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\models\\task10_unet_weighted_best.pt",
+    "predictions_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\10_unet_weighted_validation_predictions.csv",
+    "quantile_analysis_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\10_unet_weighted_validation_error_by_quantile.csv"
+}

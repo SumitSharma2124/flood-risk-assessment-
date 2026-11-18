@@ -1,0 +1,65 @@
+{
+  "input": "data/raw_data/shelters/Monsoon-Camp-Details-ALL-Kerala.xlsx",
+  "district_boundary": "data/interim/district.gpkg",
+  "district_layer": "district_buffered",
+  "ksdma_raster": "data/processed/ksdma_100yr_90m.tif",
+  "grid_raster": "data/processed/distance_to_permanent_water_90m.tif",
+  "crs": "EPSG:32643",
+  "dedupe_dist_m": 50,
+  "name_similarity": 0.85,
+  "final_camps": 379,
+  "steps": [
+    {
+      "step": "raw rows (all Kerala)",
+      "remaining": 6377,
+      "removed": 0,
+      "note": ""
+    },
+    {
+      "step": "filter to Alappuzha",
+      "remaining": 419,
+      "removed": 5958,
+      "note": ""
+    },
+    {
+      "step": "drop missing/non-numeric coordinates",
+      "remaining": 419,
+      "removed": 0,
+      "note": ""
+    },
+    {
+      "step": "drop invalid/out-of-Kerala coordinates",
+      "remaining": 418,
+      "removed": 1,
+      "note": ""
+    },
+    {
+      "step": "inside buffered district boundary",
+      "remaining": 397,
+      "removed": 21,
+      "note": ""
+    },
+    {
+      "step": "dedupe (<= 50 m and name sim >= 0.85)",
+      "remaining": 379,
+      "removed": 18,
+      "note": ""
+    }
+  ],
+  "outside_grid": 0,
+  "in_ksdma_masked_area": 290,
+  "on_water_cell": [
+    "CAMP_0122",
+    "CAMP_0225",
+    "CAMP_0312",
+    "CAMP_0356"
+  ],
+  "capacity": {
+    "n_valid": 379,
+    "n_missing": 0,
+    "sum": 46100.0,
+    "median": 60.0,
+    "min": 5.0,
+    "max": 2000.0
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "task": "13E - Exposure source coverage audit",
+  "district": "Alappuzha",
+  "flood_fraction_threshold": 0.5,
+  "common_domain_cells": 71799,
+  "flooded_cells": 28400,
+  "non_flooded_cells": 43399,
+  "component_results": {
+    "population": {
+      "valid_cells": 71799,
+      "missing_cells_in_common_domain": 0,
+      "missing_pct_in_common_domain": 0.0,
+      "flooded": {
+        "cells": 28400,
+        "zero_pct": 43.052816901408455,
+        "nonzero_pct": 56.947183098591545,
+        "mean": 2.242396064694761,
+        "median": 0.6664828062057495,
+        "p95": 8.775774955749512
+      },
+      "non_flooded": {
+        "cells": 43399,
+        "zero_pct": 7.023203299615198,
+        "nonzero_pct": 92.9767967003848,
+        "mean": 12.74974083893722,
+        "median": 10.908358573913574,
+        "p95": 31.44442195892334
+      },
+      "flooded_vs_non_flooded_auc": 0.13666279225619854
+    },
+    "buildings": {
+      "valid_cells": 71799,
+      "missing_cells_in_common_domain": 0,
+      "missing_pct_in_common_domain": 0.0,
+      "flooded": {
+        "cells": 28400,
+        "zero_pct": 93.75352112676056,
+        "nonzero_pct": 6.246478873239437,
+        "mean": 0.11045774647887324,
+        "median": 0.0,
+        "p95": 1.0
+      },
+      "non_flooded": {
+        "cells": 43399,
+        "zero_pct": 30.66890942187608,
+        "nonzero_pct": 69.33109057812392,
+        "mean": 3.7420217055692526,
+        "median": 2.0,
+        "p95": 12.0
+      },
+      "flooded_vs_non_flooded_auc": 0.1708809392797718
+    },
+    "facilities": {
+      "valid_cells": 71799,
+      "missing_cells_in_common_domain": 0,
+      "missing_pct_in_common_domain": 0.0,
+      "flooded": {
+        "cells": 28400,
+        "zero_pct": 99.98239436619718,
+        "nonzero_pct": 0.017605633802816902,
+        "mean": 0.00013380281732115946,
+        "median": 0.0,
+        "p95": 0.0
+      },
+      "non_flooded": {
+        "cells": 43399,
+        "zero_pct": 99.54837669070716,
+        "nonzero_pct": 0.45162330929284084,
+        "mean": 0.002850296096020672,
+        "median": 0.0,
+        "p95": 0.0
+      },
+      "flooded_vs_non_flooded_auc": 0.4978299988414091
+    },
+    "final_exposure": {
+      "valid_cells": 71799,
+      "missing_cells_in_common_domain": 0,
+      "missing_pct_in_common_domain": 0.0,
+      "flooded": {
+        "cells": 28400,
+        "zero_pct": 41.16197183098592,
+        "nonzero_pct": 58.83802816901409,
+        "mean": 0.023209660946238626,
+        "median": 0.007590190274640918,
+        "p95": 0.09354478418827052
+      },
+      "non_flooded": {
+        "cells": 43399,
+        "zero_pct": 6.698311020991267,
+        "nonzero_pct": 93.30168897900873,
+        "mean": 0.15964161181300196,
+        "median": 0.13291403651237488,
+        "p95": 0.4089052706956863
+      },
+      "flooded_vs_non_flooded_auc": 0.12431414577930497
+    }
+  },
+  "limitations": [
+    "Zero values indicate no recorded rasterised count or score; they do not prove that source data are complete.",
+    "This audit cannot independently establish OSM or Google building/facility completeness.",
+    "Population, building and facility layers have different source dates and collection methods.",
+    "AUC is descriptive association with the 2018 flood mask, not a measure of source-data completeness."
+  ],
+  "outputs": {
+    "csv": "outputs\\tables\\13e_source_coverage_by_landcover.csv",
+    "summary_json": "outputs\\tables\\13e_source_coverage_summary.json"
+  }
+}

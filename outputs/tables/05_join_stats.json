@@ -1,0 +1,37 @@
+{
+  "inputs": {
+    "census_clean": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\census_clean.csv",
+    "villages_clip": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\interim\\villages_clip.gpkg",
+    "mapping": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\raw_data\\village_boundaries\\kl_village_2011_2001_code_mapping.txt"
+  },
+  "match_methods": {
+    "mapping_key_2001": 83,
+    "name_type": 5
+  },
+  "checks": {
+    "total_polygons": 88,
+    "matched_polygons": 88,
+    "matched_villages_share": 1.0,
+    "matched_population": 2071460.0,
+    "total_population": 2127789.0,
+    "matched_population_share": 0.973526980353785,
+    "unmatched_polygons": 0,
+    "unmatched_census_areas": 2,
+    "filled_polygons": 0,
+    "meets_village_threshold": true,
+    "meets_population_threshold": true
+  },
+  "unmatched_census_areas": [
+    {
+      "area_name": "Vayalar (CT)",
+      "level": "TOWN",
+      "population": 24804
+    },
+    {
+      "area_name": "Thanneermukkam (CT)",
+      "level": "TOWN",
+      "population": 31525
+    }
+  ],
+  "unmatched_polygons": []
+}

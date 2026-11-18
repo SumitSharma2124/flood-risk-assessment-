@@ -1,0 +1,26 @@
+{
+  "task": "13D - Land-cover-stratified exposure audit",
+  "district": "Alappuzha",
+  "flood_fraction_threshold": 0.5,
+  "common_domain_cells": 71799,
+  "flooded_cells": 28400,
+  "non_flooded_cells": 43399,
+  "landcover_valid_cells": 71799,
+  "landcover_classes_present": 9,
+  "landcover_class_codes": [
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    80,
+    90,
+    95
+  ],
+  "interpretation_note": "Exposure measures people and assets potentially affected; it is not a flood-likelihood score. Differences by land-cover class are descriptive and do not establish causation.",
+  "outputs": {
+    "csv": "outputs\\tables\\13d_landcover_exposure_audit.csv",
+    "summary_json": "outputs\\tables\\13d_landcover_exposure_audit_summary.json"
+  }
+}

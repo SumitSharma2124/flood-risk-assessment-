@@ -1,0 +1,123 @@
+{
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "observed_event": "2018 Sentinel-1 flood extent",
+    "common_validation_cells": 71799,
+    "common_domain": "KSDMA modelled cells with all hazard, risk and flood data valid",
+    "flood_fraction_thresholds": [
+        0.1,
+        0.25,
+        0.5,
+        0.75
+    ],
+    "primary_flood_fraction_threshold": 0.5,
+    "hazard_fixed_score_threshold": 0.5,
+    "hazard_normalisation": {
+        "method": "KSDMA common-domain min-max",
+        "minimum": 0.809999942779541,
+        "maximum": 1087.0
+    },
+    "primary_threshold_hazard_metrics": [
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "KSDMA",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.7391277116140471,
+            "average_precision": 0.5587759625172279,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.5977112676056338,
+            "top_prevalence_precision": 0.5977112676056338,
+            "top_prevalence_recall": 0.5977112676056338,
+            "top_prevalence_f1": 0.5977112676056338
+        },
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "XGBoost",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.8961541700026191,
+            "average_precision": 0.7947535389014267,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.7790845070422535,
+            "top_prevalence_precision": 0.7790845070422535,
+            "top_prevalence_recall": 0.7790845070422535,
+            "top_prevalence_f1": 0.7790845070422535
+        },
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "U-Net",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.8751402576615479,
+            "average_precision": 0.768966799468964,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.7439084507042254,
+            "top_prevalence_precision": 0.7439084507042254,
+            "top_prevalence_recall": 0.7439084507042254,
+            "top_prevalence_f1": 0.7439084507042254
+        }
+    ],
+    "primary_threshold_risk_metrics": [
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "KSDMA",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.1968323047457769,
+            "average_precision": 0.27714103060295353,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.13330985915492957,
+            "top_prevalence_precision": 0.13330985915492957,
+            "top_prevalence_recall": 0.13330985915492957,
+            "top_prevalence_f1": 0.13330985915492957
+        },
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "XGBoost",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.15057473861116422,
+            "average_precision": 0.26855605530945537,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.08116197183098592,
+            "top_prevalence_precision": 0.08116197183098592,
+            "top_prevalence_recall": 0.08116197183098592,
+            "top_prevalence_f1": 0.08116197183098592
+        },
+        {
+            "flood_fraction_threshold": 0.5,
+            "model": "U-Net",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.16151088621176124,
+            "average_precision": 0.27027140956884016,
+            "top_prevalence_selected_cells": 28400,
+            "top_prevalence_selected_fraction": 0.39554868452206854,
+            "top_prevalence_flood_capture_rate": 0.09640845070422535,
+            "top_prevalence_precision": 0.09640845070422535,
+            "top_prevalence_recall": 0.09640845070422535,
+            "top_prevalence_f1": 0.09640845070422535
+        }
+    ],
+    "limitations": [
+        "2018 observed flood extent is not equivalent to a 100-year return-period hazard map.",
+        "Metrics measure spatial agreement with the observed 2018 event.",
+        "The common KSDMA modelled domain is used for all model comparisons.",
+        "Top-prevalence capture selects the same number of high-scoring cells as observed flooded cells; it is not a calibrated probability threshold.",
+        "Hazard binary metrics use a fixed normalized score threshold of 0.5.",
+        "Risk scores are relative indices, not probabilities or expected losses."
+    ],
+    "outputs": {
+        "hazard_metrics_csv": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13_hazard_validation_metrics.csv",
+        "risk_metrics_csv": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13_risk_validation_metrics.csv",
+        "hazard_binary_metrics_csv": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13_hazard_binary_metrics.csv",
+        "hazard_roc_plot": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\figures\\13_hazard_roc_auc_sensitivity.png",
+        "risk_roc_plot": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\figures\\13_risk_roc_auc_sensitivity.png"
+    }
+}

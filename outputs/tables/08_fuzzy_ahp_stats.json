@@ -1,0 +1,146 @@
+{
+  "district": "Alappuzha",
+  "scenario": "100yr",
+  "method": "Buckley Fuzzy-AHP weighted overlay with Mamdani AND-rule activation diagnostics",
+  "valid_district_cells": 176745,
+  "grid_resolution_m": 90,
+  "score_min": 0.02075296826660633,
+  "score_max": 1.0,
+  "score_mean": 0.5272597670555115,
+  "score_median": 0.5052297115325928,
+  "criteria": [
+    "elevation",
+    "slope",
+    "twi",
+    "distance_waterway",
+    "landcover_susceptibility"
+  ],
+  "membership_bounds": {
+    "elevation": {
+      "p10": 0.0,
+      "p90": 16.85267677307129,
+      "direction": "decreasing"
+    },
+    "slope": {
+      "p10": 0.06337369531393051,
+      "p90": 2.464585113525391,
+      "direction": "decreasing"
+    },
+    "twi": {
+      "p10": 8.050417137145995,
+      "p90": 13.586918067932132,
+      "direction": "increasing"
+    },
+    "distance_waterway": {
+      "p10": 0.0,
+      "p90": 636.3961181640625,
+      "direction": "decreasing"
+    },
+    "landcover_susceptibility": {
+      "method": "fraction-weighted ESA WorldCover scores",
+      "direction": "higher is more susceptible"
+    }
+  },
+  "landcover": {
+    "class_scores": {
+      "trees": 0.2,
+      "cropland": 0.75,
+      "builtup": 0.85,
+      "water": 1.0,
+      "wetland": 0.95,
+      "mangrove": 0.8,
+      "other": 0.45
+    },
+    "mean_other_fraction": 0.021037494763731956,
+    "min_fraction_sum_after_residual": 1.0,
+    "max_fraction_sum_after_residual": 1.0,
+    "cells_with_fraction_overrun_normalized": 0
+  },
+  "weights": {
+    "elevation": 0.27269668934040514,
+    "slope": 0.1171771400670842,
+    "twi": 0.32050322575530665,
+    "distance_waterway": 0.18585810725180024,
+    "landcover_susceptibility": 0.10376483758540386
+  },
+  "weights_sum": 1.0,
+  "lambda_max": 5.208015383385536,
+  "consistency_ratio": 0.04643200521998577,
+  "consistency_ratio_limit": 0.1,
+  "consistency_passed": true,
+  "class_distribution": {
+    "Very low": {
+      "cells": 13669,
+      "area_km2": 110.719,
+      "share": 0.0773
+    },
+    "Low": {
+      "cells": 45203,
+      "area_km2": 366.144,
+      "share": 0.2558
+    },
+    "Moderate": {
+      "cells": 49667,
+      "area_km2": 402.303,
+      "share": 0.281
+    },
+    "High": {
+      "cells": 41653,
+      "area_km2": 337.389,
+      "share": 0.2357
+    },
+    "Very high": {
+      "cells": 26553,
+      "area_km2": 215.079,
+      "share": 0.1502
+    }
+  },
+  "fuzzy_rules": [
+    {
+      "rule": "R1",
+      "antecedents": "Low elevation AND high TWI",
+      "consequent": "Very high",
+      "interpretation": "Low-lying, wet terrain",
+      "mean_activation": 0.33373305201530457,
+      "share_activation_ge_0_5": 0.2732580836798778,
+      "cells_activation_ge_0_5": 48297
+    },
+    {
+      "rule": "R2",
+      "antecedents": "Near waterways AND high TWI",
+      "consequent": "Very high",
+      "interpretation": "Near-water, wet terrain",
+      "mean_activation": 0.290290504693985,
+      "share_activation_ge_0_5": 0.22091148264448782,
+      "cells_activation_ge_0_5": 39045
+    },
+    {
+      "rule": "R3",
+      "antecedents": "Low slope AND high land-cover susceptibility",
+      "consequent": "High",
+      "interpretation": "Gentle terrain with susceptible land cover",
+      "mean_activation": 0.4141966998577118,
+      "share_activation_ge_0_5": 0.3457014342697106,
+      "cells_activation_ge_0_5": 61101
+    },
+    {
+      "rule": "R4",
+      "antecedents": "Low elevation AND high land-cover susceptibility",
+      "consequent": "High",
+      "interpretation": "Low-lying land with susceptible cover",
+      "mean_activation": 0.44536763429641724,
+      "share_activation_ge_0_5": 0.3863532207417466,
+      "cells_activation_ge_0_5": 68286
+    },
+    {
+      "rule": "R5",
+      "antecedents": "High elevation AND far from waterways",
+      "consequent": "Low",
+      "interpretation": "Elevated terrain distant from waterways",
+      "mean_activation": 0.222464919090271,
+      "share_activation_ge_0_5": 0.16127188887945912,
+      "cells_activation_ge_0_5": 28504
+    }
+  ],
+  "interpretation": "Relative flood susceptibility, not flood probability, depth or a declaration of safety. Pairwise judgments and land-cover scores are initial expert assumptions requiring review and sensitivity analysis."
+}

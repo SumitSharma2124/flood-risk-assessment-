@@ -1,0 +1,13 @@
+file,layer,kind,crs,size,bounds,dtype,nodata,min,max,percent_valid,notes
+dem_clip.tif,,raster,EPSG:4326,961 x 528,"76.265417, 9.100417, 76.705417, 9.901250",float32,,-7.41749906539917,411.703857421875,100.0,min=-7.4 m; max=114.0 m; west_mean=4.4 m; east_mean=19.3 m
+landcover_clip.tif,,raster,EPSG:4326,9608 x 5277,"76.265333, 9.100417, 76.705083, 9.901083",uint8,0.0,10.0,95.0,100.0,top: Tree cover 57.3%; Cropland 15.0%; Permanent water bodies 13.6%; Herbaceous wetland 7.5%; Built-up 4.4%
+ksdma_100yr_clip.tif,,raster,EPSG:4326,961 x 528,"76.265455, 9.100892, 76.705455, 9.901725",float32,-3.4028230607370965e+38,0.809999942779541,1129.0,25.114700595970106,full_tile_valid=2.42%; inside_district_valid=40.67%; range=0.81-1087.00
+flood2018_clip.tif,,raster,EPSG:4326,2971 x 1632,"76.265351, 9.100563, 76.705166, 9.901231",uint8,,0.0,1.0,100.0,"flooded_inside=16.97%; values=[0, 1]"
+pop2018_clip.tif,,raster,EPSG:4326,961 x 528,"76.264999, 9.100834, 76.704999, 9.901667",float32,-99999.0,0.0,106.12877655029297,69.41869264970202,"district=2,703,786; buffered=2,925,322; census2011=2,127,789; delta=+27.1% (WorldPop R2025A is above the census total)"
+district.gpkg,district,vector,EPSG:32643,1,"640055.557557, 1007391.108108, 685961.759860, 1093736.870766",Polygon,,,,100.0,
+district.gpkg,district_buffered,vector,EPSG:32643,1,"639055.572678, 1006391.496485, 686960.734983, 1094735.680255",Polygon,,,,100.0,
+roads_clip.gpkg,roads,vector,EPSG:32643,33128,"640127.354664, 1006977.625601, 686090.584530, 1093875.059662",Unknown,,,,100.0,"source=33,128; clipped=33,128; duplicates=0; source already within buffer"
+waterways_clip.gpkg,waterways,vector,EPSG:32643,9217,"640074.403299, 1007526.782455, 686418.918462, 1094735.680255",Unknown,,,,100.0,"source=9,217; clipped=9,217; duplicates=0; source already within buffer"
+buildings_clip.gpkg,buildings,vector,EPSG:32643,1111252,"639261.922031, 1006401.438452, 686960.624145, 1094715.013387",MultiPolygon,,,,100.0,"csv=16,329,277; bbox=2,251,161; clipped=1,111,252"
+facilities_clip.gpkg,facilities,vector,EPSG:32643,1285,"642326.864833, 1010664.609282, 685851.448390, 1070446.830768",Unknown,,,,100.0,
+villages_clip.gpkg,villages,vector,EPSG:32643,128,"635524.210617, 997370.474517, 688871.382490, 1104305.992539",Polygon,,,,100.0,

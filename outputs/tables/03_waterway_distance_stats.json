@@ -1,0 +1,31 @@
+{
+  "waterway_lines": 18216,
+  "waterway_cells": 60864,
+  "distance_waterway": {
+    "valid_cells": 523406,
+    "min": 0.0,
+    "max": 21589.685546875,
+    "mean": 1529.0065676859033
+  },
+  "distance_waterway_district": {
+    "valid_cells": 176745,
+    "min": 0.0,
+    "max": 2448.2646484375,
+    "mean": 270.3977205920258
+  },
+  "permanent_water_band": 4,
+  "permanent_water_threshold": 0.5,
+  "permanent_water_cells": 121959,
+  "distance_permanent_water": {
+    "valid_cells": 523406,
+    "min": 0.0,
+    "max": 11384.5556640625,
+    "mean": 1584.1604547237105
+  },
+  "distance_permanent_water_district": {
+    "valid_cells": 176745,
+    "min": 0.0,
+    "max": 5355.5673828125,
+    "mean": 930.4470538155342
+  }
+}

@@ -1,0 +1,37 @@
+{
+    "model": "XGBoost",
+    "model_file": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\models\\task9_xgboost.json",
+    "output_file": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\rasters\\09_xgb_full_district_prediction.tif",
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "features": [
+        "elevation",
+        "slope",
+        "twi",
+        "distance_waterway",
+        "trees",
+        "cropland",
+        "builtup",
+        "water",
+        "wetland",
+        "mangrove"
+    ],
+    "feature_bands_1_based": [
+        1,
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    "valid_prediction_cells": 176745,
+    "prediction_min": 118.12564849853516,
+    "prediction_max": 438.0106506347656,
+    "prediction_mean": 226.66799926757812,
+    "nodata": -9999.0,
+    "note": "Predictions outside the KSDMA modelled mask are extrapolations, not independently validated hazard values."
+}

@@ -1,0 +1,19 @@
+{
+  "detected_columns": {
+    "district": "District",
+    "village": "Village",
+    "camp": "Camp",
+    "capacity": "Capacity",
+    "src_lon": "X",
+    "src_lat": "Y",
+    "lsg": "LSG",
+    "camp_type": "Type",
+    "ownership": "Ownership"
+  },
+  "rows_read": 6377,
+  "rows_alappuzha": 419,
+  "rows_after_dedup": 407,
+  "villages": 91,
+  "with_village": 407,
+  "with_source_xy": 407
+}

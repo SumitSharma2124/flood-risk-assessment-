@@ -1,0 +1,128 @@
+{
+  "flow_accumulation": {
+    "burn_0m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 2618.6451497920734,
+      "rmse": 25755.267371542086,
+      "spearman_correlation": 0.6188794389028293,
+      "changed_cells_pct": 43.122011938102915,
+      "cells_difference_over_1": 35.00070723358511,
+      "reference_mean": 1449.6669495601006,
+      "candidate_mean": 1942.372253811989
+    },
+    "burn_2m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 2284.7621262270504,
+      "rmse": 24248.028220084358,
+      "spearman_correlation": 0.802135362422216,
+      "changed_cells_pct": 32.00599734080172,
+      "cells_difference_over_1": 25.8598545927749,
+      "reference_mean": 1449.6669495601006,
+      "candidate_mean": 1714.479940026592
+    },
+    "burn_5m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.0,
+      "rmse": 0.0,
+      "spearman_correlation": 1.0,
+      "changed_cells_pct": 0.0,
+      "cells_difference_over_1": 0.0,
+      "reference_mean": 1449.6669495601006,
+      "candidate_mean": 1449.6669495601006
+    },
+    "burn_10m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 1829.581809952191,
+      "rmse": 24664.49624504524,
+      "spearman_correlation": 0.9203397077321153,
+      "changed_cells_pct": 17.45848538855413,
+      "cells_difference_over_1": 14.631814195592522,
+      "reference_mean": 1449.6669495601006,
+      "candidate_mean": 2061.5578828255398
+    }
+  },
+  "hand": {
+    "burn_0m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.726674091924064,
+      "rmse": 1.783066565943691,
+      "spearman_correlation": 0.8632739810234389,
+      "changed_cells_pct": 41.69057116184333,
+      "cells_difference_over_1": 20.860561826360012,
+      "reference_mean": 2.941860810987141,
+      "candidate_mean": 3.2733300388911886
+    },
+    "burn_2m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.38004680333953494,
+      "rmse": 1.2324157131667306,
+      "spearman_correlation": 0.9176986654758716,
+      "changed_cells_pct": 25.774420775693795,
+      "cells_difference_over_1": 11.462276160570314,
+      "reference_mean": 2.941860810987141,
+      "candidate_mean": 3.0638662384743505
+    },
+    "burn_5m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.0,
+      "rmse": 0.0,
+      "spearman_correlation": 1.0,
+      "changed_cells_pct": 0.0,
+      "cells_difference_over_1": 0.0,
+      "reference_mean": 2.941860810987141,
+      "candidate_mean": 2.941860810987141
+    },
+    "burn_10m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.19424251873907025,
+      "rmse": 1.0101261462548707,
+      "spearman_correlation": 0.9628564967914814,
+      "changed_cells_pct": 10.830858015785454,
+      "cells_difference_over_1": 5.541316586042038,
+      "reference_mean": 2.941860810987141,
+      "candidate_mean": 2.8616837617696778
+    }
+  },
+  "twi": {
+    "burn_0m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.9210302401790895,
+      "rmse": 2.006396658493122,
+      "spearman_correlation": 0.7956838083666995,
+      "changed_cells_pct": 43.122011938102915,
+      "cells_difference_over_1": 26.314181447848593,
+      "reference_mean": 10.338974394786543,
+      "candidate_mean": 10.348787951766862
+    },
+    "burn_2m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.6305455671158966,
+      "rmse": 1.6488960401018231,
+      "spearman_correlation": 0.8875437031007986,
+      "changed_cells_pct": 32.00599734080172,
+      "cells_difference_over_1": 17.717049987269796,
+      "reference_mean": 10.338974394786543,
+      "candidate_mean": 10.339269775580664
+    },
+    "burn_5m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.0,
+      "rmse": 0.0,
+      "spearman_correlation": 0.9999999999999999,
+      "changed_cells_pct": 0.0,
+      "cells_difference_over_1": 0.0,
+      "reference_mean": 10.338974394786543,
+      "candidate_mean": 10.338974394786543
+    },
+    "burn_10m": {
+      "valid_cells": 176745,
+      "mean_absolute_difference": 0.31871794968225475,
+      "rmse": 1.1584512042598707,
+      "spearman_correlation": 0.937498811035622,
+      "changed_cells_pct": 17.45848538855413,
+      "cells_difference_over_1": 8.791762143200655,
+      "reference_mean": 10.338974394786543,
+      "candidate_mean": 10.352504749376873
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "regional_districts": [
+    "Alappuzha",
+    "Kottayam",
+    "Pathanamthitta"
+  ],
+  "dem_tiles": [
+    "Copernicus_DSM_COG_30_N09_00_E076_00_DEM.tif",
+    "Copernicus_DSM_COG_30_N09_00_E077_00_DEM.tif",
+    "Copernicus_DSM_COG_30_N10_00_E076_00_DEM.tif",
+    "Copernicus_DSM_COG_30_N10_00_E077_00_DEM.tif"
+  ],
+  "regional_grid": {
+    "crs": "EPSG:32643",
+    "width": 2453,
+    "height": 2474,
+    "resolution": 90.0,
+    "bounds": [
+      609120.0,
+      995040.0,
+      829890.0,
+      1217700.0
+    ]
+  },
+  "edge_cells_filled": 72664,
+  "edge_fill_max_distance_cells": 22.0,
+  "dem_min": -7.299976348876953,
+  "dem_max": 2664.376220703125,
+  "dem_mean": 331.764404296875,
+  "waterway_features": 27432,
+  "waterway_duplicates_removed": 378,
+  "waterway_lines": 18216,
+  "waterway_cells": 112449,
+  "burn_depth_m": 5.0,
+  "burned_min": -8.701032638549805,
+  "burned_max": 2664.376220703125
+}

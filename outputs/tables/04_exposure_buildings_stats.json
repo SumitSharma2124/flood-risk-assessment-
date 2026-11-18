@@ -1,0 +1,34 @@
+{
+  "grid": {
+    "height": 982,
+    "width": 533
+  },
+  "preparation": {
+    "raw_features": 1111252,
+    "after_confidence": 881069,
+    "after_min_area": 872949,
+    "after_duplicates": 872949,
+    "inside_district": 792843,
+    "confidence_removed": 230183,
+    "small_area_removed": 8120,
+    "duplicate_removed": 0,
+    "outside_district_removed": 80106,
+    "confidence_threshold": 0.7,
+    "minimum_footprint_m2": 10.0,
+    "duplicate_rule": "latitude + longitude + footprint area"
+  },
+  "district_buildings_count": 791918,
+  "district_buildings_area_m2": 68135856.0,
+  "district_buildings_area_km2": 68.135856,
+  "nonzero_cells": 110889,
+  "max_buildings_per_cell": 66.0,
+  "mean_buildings_per_cell": 4.480567932128906,
+  "max_area_per_cell_m2": 14583.6015625,
+  "reference_count": 500000.0,
+  "count_ratio_to_reference": 1.583836,
+  "checks": {
+    "same_order_as_reference": true,
+    "all_inside_values_nonnegative": true
+  },
+  "caveat": "Google Open Buildings uses newer imagery than 2018 and may miss structures under dense tree cover."
+}

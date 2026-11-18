@@ -1,0 +1,80 @@
+{
+  "regional_grid": {
+    "height": 2474,
+    "width": 2453,
+    "bounds": [
+      609120.0,
+      995040.0,
+      829890.0,
+      1217700.0
+    ]
+  },
+  "alappuzha_grid": {
+    "height": 982,
+    "width": 533,
+    "bounds": [
+      639000.0,
+      1006380.0,
+      686970.0,
+      1094760.0
+    ]
+  },
+  "flow_routing": {
+    "resolve_flats_eps": 1e-07,
+    "pits": 955,
+    "flats": 2839,
+    "accumulation_cells": {
+      "valid_cells": 6068722,
+      "min": 1.0,
+      "max": 944085.0,
+      "mean": 821.4831995929292
+    }
+  },
+  "waterways": {
+    "regional_cells": 112449,
+    "alappuzha_cells": 60864
+  },
+  "streams": {
+    "threshold_cells": 1000,
+    "alappuzha_cells": 64496
+  },
+  "hand": {
+    "nan_cells_filled": 96820,
+    "negative_cells_clipped": 127436,
+    "drainage_cells": 418023,
+    "threshold_cells": 250,
+    "alappuzha": {
+      "valid_cells": 523406,
+      "min": 0.0,
+      "max": 310.23211669921875,
+      "mean": 8.69362037655378
+    }
+  },
+  "slope": {
+    "valid_cells": 523406,
+    "void_cells": 0,
+    "alappuzha": {
+      "valid_cells": 523406,
+      "min": 0.0,
+      "max": 36.4050178527832,
+      "mean": 2.159650248202005
+    }
+  },
+  "twi": {
+    "minimum_slope_deg": 0.1,
+    "alappuzha": {
+      "valid_cells": 523406,
+      "min": 4.931225776672363,
+      "max": 24.341615676879883,
+      "mean": 10.177748597794318
+    }
+  },
+  "log_flow_accumulation": {
+    "alappuzha": {
+      "valid_cells": 523406,
+      "min": 0.6931471824645996,
+      "max": 13.490997314453125,
+      "mean": 1.8745206742383833
+    }
+  }
+}

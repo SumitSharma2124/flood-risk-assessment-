@@ -1,0 +1,50 @@
+{
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "target": "KSDMA 100-year hazard index",
+    "task": "continuous regression",
+    "seed": 42,
+    "feature_names": [
+        "elevation",
+        "slope",
+        "twi",
+        "distance_waterway",
+        "trees",
+        "cropland",
+        "builtup",
+        "water",
+        "wetland",
+        "mangrove"
+    ],
+    "feature_bands_1_based": [
+        1,
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    "train_cells": 50261,
+    "validation_cells": 10771,
+    "test_cells": 10767,
+    "split_raster": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\data\\processed\\task9_spatial_split.tif",
+    "xgboost_best_iteration": 44,
+    "validation_metrics": [
+        {
+            "MAE": 100.30505398611473,
+            "RMSE": 132.98910798775066,
+            "R2": -0.0006170592139258524,
+            "model": "Random Forest"
+        },
+        {
+            "MAE": 98.33872985839844,
+            "RMSE": 129.85322242824782,
+            "R2": 0.046015799045562744,
+            "model": "XGBoost"
+        }
+    ]
+}

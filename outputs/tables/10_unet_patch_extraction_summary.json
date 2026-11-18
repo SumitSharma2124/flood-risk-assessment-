@@ -1,0 +1,109 @@
+{
+    "patch_size": 16,
+    "block_size_metres": 5000,
+    "input_channels": 10,
+    "feature_names": [
+        "elevation",
+        "slope",
+        "twi",
+        "distance_waterway",
+        "trees",
+        "cropland",
+        "builtup",
+        "water",
+        "wetland",
+        "mangrove"
+    ],
+    "feature_bands": [
+        1,
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    "target": "ksdma_100yr_90m",
+    "target_normalisation": {
+        "mean": 270.1574978611647,
+        "std": 113.75850359365892
+    },
+    "strategy": "Globally aligned non-overlapping tiles, split into block-specific patches with block-masked feature context.",
+    "eligible_cells": 71799,
+    "covered_cells": 71799,
+    "duplicate_supervised_cells": 0,
+    "splits": {
+        "train": {
+            "patches": 477,
+            "supervised_cells": 50261,
+            "file": "data\\processed\\task10_patches\\train.npz",
+            "input_shape": [
+                477,
+                10,
+                16,
+                16
+            ],
+            "target_shape": [
+                477,
+                1,
+                16,
+                16
+            ],
+            "mask_shape": [
+                477,
+                1,
+                16,
+                16
+            ]
+        },
+        "validation": {
+            "patches": 208,
+            "supervised_cells": 10771,
+            "file": "data\\processed\\task10_patches\\validation.npz",
+            "input_shape": [
+                208,
+                10,
+                16,
+                16
+            ],
+            "target_shape": [
+                208,
+                1,
+                16,
+                16
+            ],
+            "mask_shape": [
+                208,
+                1,
+                16,
+                16
+            ]
+        },
+        "test": {
+            "patches": 195,
+            "supervised_cells": 10767,
+            "file": "data\\processed\\task10_patches\\test.npz",
+            "input_shape": [
+                195,
+                10,
+                16,
+                16
+            ],
+            "target_shape": [
+                195,
+                1,
+                16,
+                16
+            ],
+            "mask_shape": [
+                195,
+                1,
+                16,
+                16
+            ]
+        }
+    }
+}

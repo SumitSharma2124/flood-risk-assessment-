@@ -1,0 +1,78 @@
+{
+  "grid": {
+    "crs": "EPSG:32643",
+    "transform": [
+      90.0,
+      0.0,
+      639000.0,
+      0.0,
+      -90.0,
+      1094760.0
+    ],
+    "width": 533,
+    "height": 982,
+    "bounds": [
+      639000.0,
+      1006380.0,
+      686970.0,
+      1094760.0
+    ],
+    "resolution": 90.0
+  },
+  "district_mask_cells": 176745,
+  "dem": {
+    "min": -7.254611492156982,
+    "max": 390.9185791015625,
+    "clipped_min": -7.41749906539917,
+    "clipped_max": 411.703857421875,
+    "valid_fraction": 1.0,
+    "edge_voids": 0
+  },
+  "landcover": {
+    "valid_cells": 523406,
+    "fraction_sum_max_deviation": 1.1920928955078125e-07,
+    "mode_mismatch_cells": 0,
+    "district_means": {
+      "trees": 0.5733800530433655,
+      "cropland": 0.14993633329868317,
+      "builtup": 0.04400109127163887,
+      "water": 0.13598212599754333,
+      "wetland": 0.07509598135948181,
+      "mangrove": 0.0005669236415997148,
+      "other": 0.021037494763731956
+    }
+  },
+  "ksdma": {
+    "clipped_modelled_km2": 1074.7948541879002,
+    "target_modelled_km2": 1071.9702,
+    "relative_change": -0.0026280868175857794,
+    "min": 0.809999942779541,
+    "max": 1126.0
+  },
+  "flood": {
+    "clipped_flooded_km2": 381.60452798560704,
+    "target_flooded_km2": 379.7523,
+    "relative_change": -0.0048537893284036305,
+    "fraction_min": 0.0,
+    "fraction_max": 1.0,
+    "source_flooded_cells": 432650,
+    "target_flooded_cells": 46883
+  },
+  "population": {
+    "source_total": 2703786.25,
+    "target_before_rescale": 2310004.75,
+    "target_after_rescale": 2703786.0,
+    "scale": 1.1704678312890915,
+    "relative_error": -9.24629304553938e-08,
+    "task2_total": 2703786.25,
+    "relative_to_task2": -9.24629304553938e-08,
+    "valid_fraction": 0.7358857177793148
+  },
+  "optional_dem_30m": {
+    "width": 1599,
+    "height": 2946,
+    "resolution": 30,
+    "min": -7.41749906539917,
+    "max": 411.0993347167969
+  }
+}

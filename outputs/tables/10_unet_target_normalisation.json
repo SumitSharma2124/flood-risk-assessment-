@@ -1,0 +1,9 @@
+{
+    "target": "ksdma_100yr_90m",
+    "transformation": "standard_score",
+    "mean": 270.1574978611647,
+    "std": 113.75850359365892,
+    "count": 50261,
+    "minimum": 1.0,
+    "maximum": 864.0
+}

@@ -1,0 +1,6 @@
+criterion,fuzzy_weight_lower,fuzzy_weight_middle,fuzzy_weight_upper,final_weight
+twi,0.142055,0.336332,0.688415,0.320503
+elevation,0.130990,0.276423,0.585347,0.272697
+distance_waterway,0.079690,0.178125,0.418807,0.185858
+slope,0.057017,0.114783,0.254787,0.117177
+landcover_susceptibility,0.048480,0.094337,0.234941,0.103765

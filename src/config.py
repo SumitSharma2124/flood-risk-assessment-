@@ -508,6 +508,12 @@ OUTPUT_FILES = {
     # Later modelling outputs
     "flood_labels": PROCESSED_DIR / "flood_labels_90m.tif",
     "model": MODELS_DIR / "flood_risk_model.pt",
+
+    "routing_results":        "routing_results.csv",
+    "routing_routes":         "routing_routes.gpkg",
+    "routing_lambda_summary": "routing_lambda_summary.csv",
+    "routing_sample_map":     "routing_sample_map.png",
+    "routing_lambda_curve":   "routing_lambda_curve.png",
 }
 
 
@@ -560,6 +566,66 @@ OUTPUT_FILES.update({
 CAMPS_FUZZY_THRESHOLD = 85       # name match score (0-100) inside the same village
 CAMPS_FUZZY_THRESHOLD_WIDE = 92  # stricter score when searching the whole district
 CAMPS_MAX_VILLAGE_DIST_M = 5000  # geocoded point must be near its village
+
+# Task 8: Fuzzy-AHP susceptibility mapping
+OUTPUT_FILES.update({
+    "fuzzy_ahp_score": PROCESSED_DIR / "09_fuzzy_ahp_susceptibility.tif",
+    "fuzzy_ahp_classes": PROCESSED_DIR / "09_fuzzy_ahp_classes.tif",
+    "fuzzy_ahp_memberships": PROCESSED_DIR / "09_fuzzy_ahp_memberships.tif",
+    "fuzzy_ahp_rules": PROCESSED_DIR / "09_fuzzy_ahp_rule_activations.tif",
+
+    "fuzzy_ahp_pairwise": TABLES_DIR / "09_fuzzy_ahp_pairwise.csv",
+    "fuzzy_ahp_weights": TABLES_DIR / "09_fuzzy_ahp_weights.csv",
+    "fuzzy_ahp_rule_summary": TABLES_DIR / "09_fuzzy_ahp_rule_summary.csv",
+    "fuzzy_ahp_stats": TABLES_DIR / "09_fuzzy_ahp_stats.json",
+
+    "fuzzy_ahp_overview": FIGURES_DIR / "09_fuzzy_ahp_overview.png",
+})
+
+# Task 8: Fuzzy-AHP susceptibility mapping
+OUTPUT_FILES.update({
+    "fuzzy_ahp_score": PROCESSED_DIR / "08_fuzzy_ahp_susceptibility.tif",
+    "fuzzy_ahp_classes": PROCESSED_DIR / "08_fuzzy_ahp_classes.tif",
+    "fuzzy_ahp_memberships": PROCESSED_DIR / "08_fuzzy_ahp_memberships.tif",
+    "fuzzy_ahp_rules": PROCESSED_DIR / "08_fuzzy_ahp_rule_activations.tif",
+
+    "fuzzy_ahp_pairwise": TABLES_DIR / "08_fuzzy_ahp_pairwise.csv",
+    "fuzzy_ahp_weights": TABLES_DIR / "08_fuzzy_ahp_weights.csv",
+    "fuzzy_ahp_rule_summary": TABLES_DIR / "08_fuzzy_ahp_rule_summary.csv",
+    "fuzzy_ahp_stats": TABLES_DIR / "08_fuzzy_ahp_stats.json",
+
+    "fuzzy_ahp_overview": FIGURES_DIR / "08_fuzzy_ahp_overview.png",
+})
+
+
+# Task 9 — baseline model outputs
+OUTPUT_FILES.update({
+    "rf_model": MODELS_DIR / "task9_random_forest.joblib",
+    "xgb_model": MODELS_DIR / "task9_xgboost.json",
+    "baseline_metrics": TABLES_DIR / "09_baseline_validation_metrics.csv",
+    "baseline_metadata": TABLES_DIR / "09_baseline_metadata.json",
+})
+
+# Task 13: road graph
+ROAD_HIGHWAY_TYPES = (
+    "motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
+    "residential", "service", "living_street",
+    "motorway_link", "trunk_link", "primary_link", "secondary_link", "tertiary_link",
+)
+ROAD_SAMPLE_STEP_M = 30     # hazard is sampled along each road every 30 m
+ROAD_NODING_TOL_M = 5       # bridge/tunnel ends snap to a road node within 5 m
+SNAP_WARN_M = 500           # warn when a camp/origin is farther than this from a road node
+
+OUTPUT_FILES.update({
+    "road_graph": PROCESSED_DIR / "road_graph.pkl",
+    "road_edges": PROCESSED_DIR / "road_edges.gpkg",
+    "road_nodes": PROCESSED_DIR / "road_nodes.gpkg",
+    "camps_nodes": PROCESSED_DIR / "camps_nodes.csv",
+    "origins_nodes": PROCESSED_DIR / "origins_nodes.csv",
+    "graph_stats": TABLES_DIR / "07_graph_stats.json",
+    "road_flood_by_class": TABLES_DIR / "07_road_flood_by_class.csv",
+    "graph_overview": FIGURES_DIR / "07_graph_overview.png",
+})
 
 def missing_input_paths(paths: dict[str, Path] | None = None) -> list[Path]:
     """Return raw input paths that do not exist (empty list means all good)."""

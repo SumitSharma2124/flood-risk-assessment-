@@ -1,0 +1,28 @@
+{
+  "methodology": {
+    "current": "Flow accumulation from conditioned 90 m DEM; slope from averaged original 30 m DEM",
+    "alternative": "Flow accumulation and slope from conditioned 90 m DEM"
+  },
+  "valid_cells": 176745,
+  "current_twi": {
+    "valid_cells": 176745,
+    "mean": 10.338974394786543,
+    "median": 9.649089813232422,
+    "p90": 13.586918067932132,
+    "min": 5.601260662078857,
+    "max": 24.34099578857422
+  },
+  "alternative_twi": {
+    "valid_cells": 176745,
+    "mean": 10.030456916638899,
+    "median": 9.34526538848877,
+    "p90": 13.305644416809082,
+    "min": 5.60228157043457,
+    "max": 23.654525756835938
+  },
+  "mean_absolute_difference": 0.37373640113087464,
+  "rmse": 0.7855655440659165,
+  "spearman_correlation": 0.902556783121581,
+  "changed_cells_pct": 90.64301677558065,
+  "cells_difference_over_1": 14.262355370731845
+}

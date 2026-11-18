@@ -1,0 +1,36 @@
+{
+    "task": "Task 10 \u2014 Final U-Net test evaluation",
+    "checkpoint_epoch": 7,
+    "validation_metrics_from_checkpoint": {
+        "MAE": 98.8387432670363,
+        "RMSE": 134.7527475170135,
+        "R2": -0.027332470004648446,
+        "supervised_pixels": 10771,
+        "validation_loss": 0.5723723688950906
+    },
+    "test_metrics": {
+        "MAE": 86.33331337092015,
+        "RMSE": 112.04617745178571,
+        "R2": 0.18797276874015523,
+        "mean_actual": 219.66343453287624,
+        "mean_predicted": 230.1425694291767,
+        "median_actual": 222.0,
+        "median_predicted": 216.7672882080078,
+        "actual_std": 124.34025338442095,
+        "predicted_std": 72.76136725545865,
+        "mean_residual": 10.479134896300437,
+        "median_absolute_error": 68.13259887695312,
+        "underprediction_cells": 4789,
+        "overprediction_cells": 5978,
+        "supervised_cells": 10767
+    },
+    "prediction_mean_difference": 10.4791259765625,
+    "prediction_to_actual_std_ratio": 0.5851795077323914,
+    "test_cells_expected": 10767,
+    "test_cells_evaluated": 10767,
+    "duplicate_test_coordinates": 0,
+    "model_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\models\\task10_unet_best.pt",
+    "predictions_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\10_unet_test_predictions.csv",
+    "quantile_analysis_path": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\10_unet_test_error_by_quantile.csv",
+    "test_used_for_model_selection": false
+}

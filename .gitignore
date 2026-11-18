@@ -5,7 +5,7 @@
 data/interim/
 data/processed/
 models/
-outputs/
+
 
 # Python
 __pycache__/

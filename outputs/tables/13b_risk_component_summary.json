@@ -1,0 +1,205 @@
+{
+    "task": "Task 13B - Risk component diagnostic",
+    "district": "Alappuzha",
+    "scenario": "100yr",
+    "observed_event": "2018 Sentinel-1 flood extent",
+    "common_validation_cells": 71799,
+    "common_domain": "KSDMA modelled cells with all required rasters valid",
+    "hazard_normalisation": {
+        "method": "KSDMA common-domain min-max",
+        "minimum": 0.809999942779541,
+        "maximum": 1087.0
+    },
+    "primary_flood_fraction_threshold": 0.5,
+    "thresholds_tested": [
+        0.1,
+        0.25,
+        0.5,
+        0.75
+    ],
+    "primary_threshold_results": [
+        {
+            "surface": "KSDMA hazard",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.7391277116140471,
+            "average_precision": 0.5587759625172279,
+            "top_prevalence_capture": 0.5977112676056338,
+            "flooded_mean_score": 0.2873951366124029,
+            "non_flooded_mean_score": 0.20242975647551087,
+            "mean_score_difference": 0.08496538013689203,
+            "flooded_median_score": 0.2920207381248474,
+            "non_flooded_median_score": 0.20363841950893402
+        },
+        {
+            "surface": "XGBoost hazard",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.8961541728423028,
+            "average_precision": 0.7947535242403568,
+            "top_prevalence_capture": 0.7790845070422535,
+            "flooded_mean_score": 0.2826427269249525,
+            "non_flooded_mean_score": 0.22037769469874322,
+            "mean_score_difference": 0.0622650322262093,
+            "flooded_median_score": 0.2854163646697998,
+            "non_flooded_median_score": 0.21960021555423737
+        },
+        {
+            "surface": "U-Net hazard",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.875140258472886,
+            "average_precision": 0.7689668081864993,
+            "top_prevalence_capture": 0.7439084507042254,
+            "flooded_mean_score": 0.2806445479149025,
+            "non_flooded_mean_score": 0.2001792293853716,
+            "mean_score_difference": 0.0804653185295309,
+            "flooded_median_score": 0.28719569742679596,
+            "non_flooded_median_score": 0.19276151061058044
+        },
+        {
+            "surface": "Exposure",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.12431414577930497,
+            "average_precision": 0.2652695931343804,
+            "top_prevalence_capture": 0.04869718309859155,
+            "flooded_mean_score": 0.023209660946238626,
+            "non_flooded_mean_score": 0.15964161181300196,
+            "mean_score_difference": -0.13643195086676332,
+            "flooded_median_score": 0.007590190274640918,
+            "non_flooded_median_score": 0.13291403651237488
+        },
+        {
+            "surface": "Vulnerability",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.5785846837517188,
+            "average_precision": 0.4591109268547895,
+            "top_prevalence_capture": 0.48070422535211266,
+            "flooded_mean_score": 0.5887536429524631,
+            "non_flooded_mean_score": 0.5522173577930117,
+            "mean_score_difference": 0.0365362851594514,
+            "flooded_median_score": 0.5948275923728943,
+            "non_flooded_median_score": 0.5660919547080994
+        },
+        {
+            "surface": "KSDMA integrated risk",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.1968323047457769,
+            "average_precision": 0.27714103060295353,
+            "top_prevalence_capture": 0.13330985915492957,
+            "flooded_mean_score": 0.0037134547849056246,
+            "non_flooded_mean_score": 0.014953102218945509,
+            "mean_score_difference": -0.011239647434039884,
+            "flooded_median_score": 0.0011911685578525066,
+            "non_flooded_median_score": 0.011081469245254993
+        },
+        {
+            "surface": "XGBoost integrated risk",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.15057473861116422,
+            "average_precision": 0.26855605530945537,
+            "top_prevalence_capture": 0.08116197183098592,
+            "flooded_mean_score": 0.003661381821807289,
+            "non_flooded_mean_score": 0.017178118964822176,
+            "mean_score_difference": -0.013516737143014887,
+            "flooded_median_score": 0.001250488217920065,
+            "non_flooded_median_score": 0.014919127337634563
+        },
+        {
+            "surface": "U-Net integrated risk",
+            "observed_flood_cells": 28400,
+            "observed_flood_prevalence": 0.39554868452206854,
+            "roc_auc": 0.16151088621176124,
+            "average_precision": 0.27027140956884016,
+            "top_prevalence_capture": 0.09640845070422535,
+            "flooded_mean_score": 0.00355695941449879,
+            "non_flooded_mean_score": 0.015171764248224761,
+            "mean_score_difference": -0.011614804833725971,
+            "flooded_median_score": 0.001227514585480094,
+            "non_flooded_median_score": 0.013047980144619942
+        }
+    ],
+    "surface_distributions": [
+        {
+            "surface": "KSDMA hazard",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "mean": 0.236037700818576,
+            "median": 0.248750239610672,
+            "std": 0.11062046445269573
+        },
+        {
+            "surface": "XGBoost hazard",
+            "minimum": 0.10810746252536774,
+            "maximum": 0.4025084674358368,
+            "mean": 0.24500654628754448,
+            "median": 0.2583034038543701,
+            "std": 0.04750777406282192
+        },
+        {
+            "surface": "U-Net hazard",
+            "minimum": 0.05457920581102371,
+            "maximum": 0.3395165503025055,
+            "mean": 0.23200718027937678,
+            "median": 0.2525712847709656,
+            "std": 0.06308668700936268
+        },
+        {
+            "surface": "Exposure",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "mean": 0.10567613312087423,
+            "median": 0.05832658335566521,
+            "std": 0.12415588274750755
+        },
+        {
+            "surface": "Vulnerability",
+            "minimum": 0.11206896603107452,
+            "maximum": 0.8103448152542114,
+            "mean": 0.566669237325156,
+            "median": 0.5775862336158752,
+            "std": 0.1350933869462278
+        },
+        {
+            "surface": "KSDMA integrated risk",
+            "minimum": 0.0,
+            "maximum": 0.19155286252498627,
+            "mean": 0.01050727446191919,
+            "median": 0.006010187324136496,
+            "std": 0.013431823715332853
+        },
+        {
+            "surface": "XGBoost integrated risk",
+            "minimum": 0.0,
+            "maximum": 0.13128040730953217,
+            "mean": 0.011831591368872055,
+            "median": 0.00774477468803525,
+            "std": 0.012841394726949288
+        },
+        {
+            "surface": "U-Net integrated risk",
+            "minimum": 0.0,
+            "maximum": 0.09557544440031052,
+            "mean": 0.010577543475263889,
+            "median": 0.0070913126692175865,
+            "std": 0.011311009653931847
+        }
+    ],
+    "limitations": [
+        "2018 observed flood extent is not equivalent to a 100-year return-period hazard map.",
+        "Metrics measure spatial agreement with the observed 2018 event.",
+        "Top-prevalence capture is a ranking diagnostic, not a calibrated probability threshold.",
+        "Exposure and vulnerability are relative indices.",
+        "The analysis diagnoses spatial association and does not establish causal relationships.",
+        "Risk scores are relative indices, not probabilities or expected losses."
+    ],
+    "outputs": {
+        "all_threshold_metrics": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13b_risk_component_metrics.csv",
+        "primary_threshold_comparison": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13b_primary_component_comparison.csv",
+        "surface_distributions": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\tables\\13b_surface_distributions.csv"
+    }
+}

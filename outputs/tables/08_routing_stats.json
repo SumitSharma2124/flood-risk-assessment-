@@ -1,0 +1,16 @@
+{
+  "lambda": 1.0,
+  "hazard_definition": "max(KSDMA 100-yr depth cm / 300 capped at 1, flooded_2018_share); NaN depth = dry = 0; 2018 mask is a proxy floor, not a closure",
+  "high_hazard_threshold": 0.5,
+  "origins_total": 88,
+  "origins_routed": 88,
+  "origins_skipped": [],
+  "routes_changed_by_risk_awareness": 8,
+  "mean_hazard_shortest": 0.2399,
+  "mean_hazard_risk_aware": 0.229,
+  "high_hazard_share_shortest": 0.2422,
+  "high_hazard_share_risk_aware": 0.231,
+  "median_extra_length_m": 0.0,
+  "poorly_connected_routed": 9,
+  "note": "Distances exclude straight-line access gaps unless total_length_with_access_m is used. Poorly connected origins have low-confidence access."
+}

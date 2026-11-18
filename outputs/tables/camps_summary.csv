@@ -1,0 +1,7 @@
+step,remaining,removed,note
+raw rows (all Kerala),6377,0,
+filter to Alappuzha,419,5958,
+drop missing/non-numeric coordinates,419,0,
+drop invalid/out-of-Kerala coordinates,418,1,
+inside buffered district boundary,397,21,
+dedupe (<= 50 m and name sim >= 0.85),379,18,

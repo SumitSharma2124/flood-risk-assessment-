@@ -1,0 +1,6 @@
+rule,antecedents,consequent,interpretation,mean_activation,share_activation_ge_0_5,cells_activation_ge_0_5
+R1,Low elevation AND high TWI,Very high,"Low-lying, wet terrain",0.333733,0.273258,48297
+R2,Near waterways AND high TWI,Very high,"Near-water, wet terrain",0.290291,0.220911,39045
+R3,Low slope AND high land-cover susceptibility,High,Gentle terrain with susceptible land cover,0.414197,0.345701,61101
+R4,Low elevation AND high land-cover susceptibility,High,Low-lying land with susceptible cover,0.445368,0.386353,68286
+R5,High elevation AND far from waterways,Low,Elevated terrain distant from waterways,0.222465,0.161272,28504

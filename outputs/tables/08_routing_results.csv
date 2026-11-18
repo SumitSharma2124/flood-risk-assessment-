@@ -1,0 +1,177 @@
+village,population_2018,origin_node,camp_node,access_cost_m,camp_access_cost_m,poorly_connected,lambda_used,route_type,length_m,mean_hazard,max_hazard,high_hazard_share,flooded_2018_share,edge_count,total_length_with_access_m,same_route_as_shortest
+Aroor,45286.0,43398,43590,81.7,42.8,False,1.0,shortest_path,1048.9,0.0,0.0,0.0,0.0,9,1173.4,True
+Aroor,45286.0,43398,43590,81.7,42.8,False,1.0,risk_aware_astar,1048.9,0.0,0.0,0.0,0.0,9,1173.4,True
+Perumbalam,6421.0,43308,43315,77.3,1759.2,False,1.0,shortest_path,632.9,0.2149,1.0,0.2149,0.0,3,2469.4,True
+Perumbalam,6421.0,43308,43315,77.3,1759.2,False,1.0,risk_aware_astar,632.9,0.2149,1.0,0.2149,0.0,3,2469.4,True
+Arookutty,19366.0,40955,40922,242.4,27.6,False,1.0,shortest_path,3452.7,0.0,0.0,0.0,0.0,32,3722.7,True
+Arookutty,19366.0,40955,40922,242.4,27.6,False,1.0,risk_aware_astar,3452.7,0.0,0.0,0.0,0.0,32,3722.7,True
+Ezhupunna,25383.0,42230,42277,79.0,52.3,False,1.0,shortest_path,636.9,0.0,0.0,0.0,0.0,8,768.2,True
+Ezhupunna,25383.0,42230,42277,79.0,52.3,False,1.0,risk_aware_astar,636.9,0.0,0.0,0.0,0.0,8,768.2,True
+Panavally,25313.0,41216,41060,110.8,88.6,False,1.0,shortest_path,1717.2,0.1779,0.64,0.2779,0.0,10,1916.6,True
+Panavally,25313.0,41216,41060,110.8,88.6,False,1.0,risk_aware_astar,1717.2,0.1779,0.64,0.2779,0.0,10,1916.6,True
+Kodamthuruth,18324.0,41734,41706,26.4,3.4,False,1.0,shortest_path,779.5,0.0,0.0,0.0,0.0,7,809.3,True
+Kodamthuruth,18324.0,41734,41706,26.4,3.4,False,1.0,risk_aware_astar,779.5,0.0,0.0,0.0,0.0,7,809.3,True
+Thaikattussery,21565.0,42729,40514,102.5,159.1,False,1.0,shortest_path,2516.3,0.0,0.0,0.0,0.0,18,2777.9,True
+Thaikattussery,21565.0,42729,40514,102.5,159.1,False,1.0,risk_aware_astar,2516.3,0.0,0.0,0.0,0.0,18,2777.9,True
+Thuravoor Thekku,22758.0,39921,39921,336.3,336.3,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,672.6,True
+Thuravoor Thekku,22758.0,39921,39921,336.3,336.3,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,672.6,True
+Kuthiathode,22264.0,41327,41706,147.1,3.4,False,1.0,shortest_path,2402.6,0.0,0.0,0.0,0.0,31,2553.1,True
+Kuthiathode,22264.0,41327,41706,147.1,3.4,False,1.0,risk_aware_astar,2402.6,0.0,0.0,0.0,0.0,31,2553.1,True
+Pallippuram,36052.0,38728,38773,144.1,52.0,False,1.0,shortest_path,486.3,0.0,0.0,0.0,0.0,6,682.4,True
+Pallippuram,36052.0,38728,38773,144.1,52.0,False,1.0,risk_aware_astar,486.3,0.0,0.0,0.0,0.0,6,682.4,True
+Pattanakkad,35781.0,39480,39371,128.6,26.1,False,1.0,shortest_path,1358.2,0.0,0.0,0.0,0.0,4,1512.9,True
+Pattanakkad,35781.0,39480,39371,128.6,26.1,False,1.0,risk_aware_astar,1358.2,0.0,0.0,0.0,0.0,4,1512.9,True
+Cherthala,106954.0,37595,37441,84.2,57.9,False,1.0,shortest_path,1021.7,0.1125,0.7567,0.1487,0.0,14,1163.8,True
+Cherthala,106954.0,37595,37441,84.2,57.9,False,1.0,risk_aware_astar,1021.7,0.1125,0.7567,0.1487,0.0,14,1163.8,True
+Kadakkarappally,22676.0,36693,36707,64.1,164.6,False,1.0,shortest_path,438.3,0.0866,0.1967,0.0,0.0,3,667.0,True
+Kadakkarappally,22676.0,36693,36707,64.1,164.6,False,1.0,risk_aware_astar,438.3,0.0866,0.1967,0.0,0.0,3,667.0,True
+Kokkothamangalam,64127.0,35667,37295,155.0,23.6,False,1.0,shortest_path,4786.8,0.3515,1.0,0.2969,0.0,35,4965.4,True
+Kokkothamangalam,64127.0,35667,37295,155.0,23.6,False,1.0,risk_aware_astar,4786.8,0.3515,1.0,0.2969,0.0,35,4965.4,True
+Cherthala North (part),12607.0,36488,36479,78.8,41.7,False,1.0,shortest_path,972.1,0.0,0.0,0.0,0.0,2,1092.6,True
+Cherthala North (part),12607.0,36488,36479,78.8,41.7,False,1.0,risk_aware_astar,972.1,0.0,0.0,0.0,0.0,2,1092.6,True
+Cherthala South (part),34232.0,36046,33839,65.4,72.6,False,1.0,shortest_path,509.9,0.0,0.0,0.0,0.0,3,647.9,True
+Cherthala South (part),34232.0,36046,33839,65.4,72.6,False,1.0,risk_aware_astar,509.9,0.0,0.0,0.0,0.0,3,647.9,True
+Kanjikkuzhi,35694.0,34811,34473,55.9,34.7,False,1.0,shortest_path,395.7,0.0,0.0,0.0,0.0,4,486.3,True
+Kanjikkuzhi,35694.0,34811,34473,55.9,34.7,False,1.0,risk_aware_astar,395.7,0.0,0.0,0.0,0.0,4,486.3,True
+Muhamma,33522.0,32463,32475,469.9,117.2,False,1.0,shortest_path,566.5,0.0,0.0,0.0,0.0,6,1153.6,True
+Muhamma,33522.0,32463,32475,469.9,117.2,False,1.0,risk_aware_astar,566.5,0.0,0.0,0.0,0.0,6,1153.6,True
+Mararikkulam North,42682.0,33615,33758,126.8,108.4,False,1.0,shortest_path,1382.9,0.0,0.0,0.0,0.0,3,1618.1,True
+Mararikkulam North,42682.0,33615,33758,126.8,108.4,False,1.0,risk_aware_astar,1382.9,0.0,0.0,0.0,0.0,3,1618.1,True
+Kalavoor,42938.0,33181,33183,65.8,115.7,False,1.0,shortest_path,357.4,0.0,0.0,0.0,0.0,2,538.9,True
+Kalavoor,42938.0,33181,33183,65.8,115.7,False,1.0,risk_aware_astar,357.4,0.0,0.0,0.0,0.0,2,538.9,True
+Mannanchery,33701.0,31809,31794,12.0,46.4,False,1.0,shortest_path,381.7,0.0,0.0,0.0,0.0,5,440.1,True
+Mannanchery,33701.0,31809,31794,12.0,46.4,False,1.0,risk_aware_astar,381.7,0.0,0.0,0.0,0.0,5,440.1,True
+Komalapuram,60480.0,33898,31918,52.8,33.0,False,1.0,shortest_path,1101.5,0.0,0.0,0.0,0.0,12,1187.3,True
+Komalapuram,60480.0,33898,31918,52.8,33.0,False,1.0,risk_aware_astar,1101.5,0.0,0.0,0.0,0.0,12,1187.3,True
+Aryad South  (Part),75501.0,31614,30752,1511.0,55.5,True,1.0,shortest_path,775.6,0.0,0.0,0.0,0.0,6,2342.1,True
+Aryad South  (Part),75501.0,31614,30752,1511.0,55.5,True,1.0,risk_aware_astar,775.6,0.0,0.0,0.0,0.0,6,2342.1,True
+Kainakary North,3695.0,31778,21330,1650.0,65.3,True,1.0,shortest_path,10799.7,0.8143,1.0,0.8458,0.4181,65,12515.0,True
+Kainakary North,3695.0,31778,21330,1650.0,65.3,True,1.0,risk_aware_astar,10799.7,0.8143,1.0,0.8458,0.4181,65,12515.0,True
+Pathirappally,18688.0,29671,32669,79.3,84.3,False,1.0,shortest_path,1816.1,0.0,0.0,0.0,0.0,12,1979.7,True
+Pathirappally,18688.0,29671,32669,79.3,84.3,False,1.0,risk_aware_astar,1816.1,0.0,0.0,0.0,0.0,12,1979.7,True
+Kavalam,11662.0,20807,22255,1785.1,41.9,True,1.0,shortest_path,3343.3,0.5215,0.9667,0.3507,0.0067,22,5170.3,True
+Kavalam,11662.0,20807,22255,1785.1,41.9,True,1.0,risk_aware_astar,3343.3,0.5215,0.9667,0.3507,0.0067,22,5170.3,True
+Mullakkal (Part),3065.0,31772,21330,1055.1,65.3,True,1.0,shortest_path,11516.3,0.8263,1.0,0.8558,0.4105,67,12636.7,True
+Mullakkal (Part),3065.0,31772,21330,1055.1,65.3,True,1.0,risk_aware_astar,11516.3,0.8263,1.0,0.8558,0.4105,67,12636.7,True
+Pulinkunnu,15914.0,26598,21330,2606.1,65.3,True,1.0,shortest_path,9309.1,0.876,1.0,0.8811,0.4363,50,11980.5,True
+Pulinkunnu,15914.0,26598,21330,2606.1,65.3,True,1.0,risk_aware_astar,9309.1,0.876,1.0,0.8811,0.4363,50,11980.5,True
+Kunnumma,11231.0,22327,21639,424.5,49.0,False,1.0,shortest_path,5565.8,0.4426,0.9,0.5361,0.045,32,6039.3,True
+Kunnumma,11231.0,22327,21639,424.5,49.0,False,1.0,risk_aware_astar,5565.8,0.4426,0.9,0.5361,0.045,32,6039.3,True
+Neelamperoor,9068.0,22226,20735,160.1,21.1,False,1.0,shortest_path,2904.2,0.7187,1.0,0.8143,0.0,16,3085.4,True
+Neelamperoor,9068.0,22226,20735,160.1,21.1,False,1.0,risk_aware_astar,2904.2,0.7187,1.0,0.8143,0.0,16,3085.4,True
+Alappuzha,216622.0,25495,25092,24.9,47.2,False,1.0,shortest_path,698.0,0.0,0.0,0.0,0.0,12,770.1,True
+Alappuzha,216622.0,25495,25092,24.9,47.2,False,1.0,risk_aware_astar,698.0,0.0,0.0,0.0,0.0,12,770.1,True
+Kainakary South,15290.0,26600,21330,130.6,65.3,False,1.0,shortest_path,5503.6,0.9481,1.0,0.9497,0.5917,28,5699.5,True
+Kainakary South,15290.0,26600,21330,130.6,65.3,False,1.0,risk_aware_astar,5503.6,0.9481,1.0,0.9497,0.5917,28,5699.5,True
+Veliyanad,11146.0,22154,21639,72.1,49.0,False,1.0,shortest_path,7452.9,0.6366,0.9967,0.7066,0.0489,33,7574.0,True
+Veliyanad,11146.0,22154,21639,72.1,49.0,False,1.0,risk_aware_astar,7452.9,0.6366,0.9967,0.7066,0.0489,33,7574.0,True
+Nedumudi,17194.0,21330,21330,65.3,65.3,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,130.6,True
+Nedumudi,17194.0,21330,21330,65.3,65.3,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,130.6,True
+Champakkulam,22087.0,20996,21639,147.0,49.0,False,1.0,shortest_path,6359.8,0.8618,1.0,0.9492,0.1634,36,6555.8,True
+Champakkulam,22087.0,20996,21639,147.0,49.0,False,1.0,risk_aware_astar,6359.8,0.8618,1.0,0.9492,0.1634,36,6555.8,True
+Ramankary,15512.0,21237,19912,47.9,47.5,False,1.0,shortest_path,4924.0,0.8558,1.0,0.9568,0.1074,27,5019.4,True
+Ramankary,15512.0,21237,19912,47.9,47.5,False,1.0,risk_aware_astar,4924.0,0.8558,1.0,0.9568,0.1074,27,5019.4,True
+Karumady,23275.0,25626,23168,78.3,23.4,False,1.0,shortest_path,2416.5,0.7965,1.0,0.9626,0.0,19,2518.2,False
+Karumady,23275.0,25626,23168,78.3,23.4,False,1.0,risk_aware_astar,2476.9,0.6101,1.0,0.7762,0.0,20,2578.6,False
+Muttar,8542.0,19858,20412,551.0,102.3,True,1.0,shortest_path,3331.8,0.904,1.0,0.8738,0.1474,7,3985.1,True
+Muttar,8542.0,19858,20412,551.0,102.3,True,1.0,risk_aware_astar,3331.8,0.904,1.0,0.8738,0.1474,7,3985.1,True
+Edathua,29987.0,19421,19912,104.7,47.5,False,1.0,shortest_path,3287.2,0.9963,1.0,0.9963,0.1097,16,3439.4,True
+Edathua,29987.0,19421,19912,104.7,47.5,False,1.0,risk_aware_astar,3287.2,0.9963,1.0,0.9963,0.1097,16,3439.4,True
+Ambalappuzha,43743.0,25713,23490,32.2,39.0,False,1.0,shortest_path,1213.6,0.0899,0.3733,0.0,0.0,10,1284.8,True
+Ambalappuzha,43743.0,25713,23490,32.2,39.0,False,1.0,risk_aware_astar,1213.6,0.0899,0.3733,0.0,0.0,10,1284.8,True
+Thakazhy,17364.0,19495,23168,55.2,23.4,False,1.0,shortest_path,6123.4,0.7681,1.0,0.8321,0.0,46,6202.0,False
+Thakazhy,17364.0,19495,23168,55.2,23.4,False,1.0,risk_aware_astar,6277.3,0.6519,1.0,0.7141,0.0,43,6355.9,False
+Thalavady,21840.0,20216,20308,140.3,20.2,False,1.0,shortest_path,1491.8,0.3304,0.4633,0.0,0.0,11,1652.3,True
+Thalavady,21840.0,20216,20308,140.3,20.2,False,1.0,risk_aware_astar,1491.8,0.3304,0.4633,0.0,0.0,11,1652.3,True
+Purakkad,32668.0,19271,23168,1065.4,23.4,True,1.0,shortest_path,10859.3,0.8654,1.0,0.9085,0.0884,58,11948.1,False
+Purakkad,32668.0,19271,23168,1065.4,23.4,True,1.0,risk_aware_astar,11013.2,0.7979,1.0,0.8401,0.0872,55,12102.0,False
+Thiruvanvandoor,17139.0,18841,18434,46.7,24.9,False,1.0,shortest_path,4610.2,0.534,1.0,0.6007,0.0,42,4681.8,False
+Thiruvanvandoor,17139.0,18841,18434,46.7,24.9,False,1.0,risk_aware_astar,5189.4,0.2331,1.0,0.2298,0.0,47,5261.0,False
+Cheruthana,11961.0,18179,18971,240.1,62.9,False,1.0,shortest_path,3125.4,0.6923,1.0,0.8444,0.0,17,3428.4,True
+Cheruthana,11961.0,18179,18971,240.1,62.9,False,1.0,risk_aware_astar,3125.4,0.6923,1.0,0.8444,0.0,17,3428.4,True
+Karuvatta,20914.0,18142,17638,193.1,84.4,False,1.0,shortest_path,2675.6,0.0047,0.0767,0.0,0.0,24,2953.1,True
+Karuvatta,20914.0,18142,17638,193.1,84.4,False,1.0,risk_aware_astar,2675.6,0.0047,0.0767,0.0,0.0,24,2953.1,True
+Chengannur  (Part),4310.0,18761,18434,122.8,24.9,False,1.0,shortest_path,2043.6,0.2514,1.0,0.374,0.0,27,2191.3,True
+Chengannur  (Part),4310.0,18761,18434,122.8,24.9,False,1.0,risk_aware_astar,2043.6,0.2514,1.0,0.374,0.0,27,2191.3,True
+Chengannur,57918.0,44149,14700,139.6,20.9,False,1.0,shortest_path,1272.0,0.2642,0.4633,0.0,0.0,6,1432.5,True
+Chengannur,57918.0,44149,14700,139.6,20.9,False,1.0,risk_aware_astar,1272.0,0.2642,0.4633,0.0,0.0,6,1432.5,True
+Pandanad (part),18514.0,18484,18434,73.6,24.9,False,1.0,shortest_path,3292.9,0.5591,1.0,0.8582,0.0,17,3391.4,True
+Pandanad (part),18514.0,18484,18434,73.6,24.9,False,1.0,risk_aware_astar,3292.9,0.5591,1.0,0.8582,0.0,17,3391.4,True
+Veeyapuram,12347.0,18013,18971,813.6,62.9,True,1.0,shortest_path,3768.7,0.8754,1.0,0.8686,0.0457,19,4645.2,True
+Veeyapuram,12347.0,18013,18971,813.6,62.9,True,1.0,risk_aware_astar,3768.7,0.8754,1.0,0.8686,0.0457,19,4645.2,True
+Kurattissery,18439.0,15941,16173,256.9,18.7,False,1.0,shortest_path,1944.5,0.4831,0.79,0.1773,0.0682,17,2220.1,False
+Kurattissery,18439.0,15941,16173,256.9,18.7,False,1.0,risk_aware_astar,2023.9,0.3992,0.79,0.1703,0.0655,15,2299.5,False
+Ennakkad,24763.0,13928,13677,125.0,51.8,False,1.0,shortest_path,1621.8,0.4532,0.6533,0.6509,0.0,9,1798.6,True
+Ennakkad,24763.0,13928,13677,125.0,51.8,False,1.0,risk_aware_astar,1621.8,0.4532,0.6533,0.6509,0.0,9,1798.6,True
+Mannar,28756.0,15840,15990,77.0,61.9,False,1.0,shortest_path,1203.4,0.0,0.0,0.0,0.0,9,1342.3,True
+Mannar,28756.0,15840,15990,77.0,61.9,False,1.0,risk_aware_astar,1203.4,0.0,0.0,0.0,0.0,9,1342.3,True
+Puliyoor(part),25032.0,14230,13559,52.9,159.7,False,1.0,shortest_path,1430.9,0.5591,1.0,0.6192,0.0,9,1643.5,False
+Puliyoor(part),25032.0,14230,13559,52.9,159.7,False,1.0,risk_aware_astar,1470.7,0.4166,1.0,0.384,0.0,7,1683.3,False
+Mulakuzha (part),36922.0,13747,13228,220.0,2.8,False,1.0,shortest_path,4400.4,0.0,0.0,0.0,0.0,19,4623.2,True
+Mulakuzha (part),36922.0,13747,13228,220.0,2.8,False,1.0,risk_aware_astar,4400.4,0.0,0.0,0.0,0.0,19,4623.2,True
+Haripad,28243.0,17386,16779,19.6,50.8,False,1.0,shortest_path,965.7,0.0311,0.2167,0.0,0.0,10,1036.1,True
+Haripad,28243.0,17386,16779,19.6,50.8,False,1.0,risk_aware_astar,965.7,0.0311,0.2167,0.0,0.0,10,1036.1,True
+Kumarapuram,30830.0,16898,12579,87.6,78.5,False,1.0,shortest_path,2011.1,0.2572,0.4867,0.0,0.0,19,2177.2,False
+Kumarapuram,30830.0,16898,12579,87.6,78.5,False,1.0,risk_aware_astar,2095.2,0.2062,0.4867,0.0,0.0,17,2261.3,False
+Thrikkunnapuzha,18592.0,12018,12579,172.1,78.5,False,1.0,shortest_path,3394.1,0.5984,0.9633,0.6903,0.0,23,3644.7,True
+Thrikkunnapuzha,18592.0,12018,12579,172.1,78.5,False,1.0,risk_aware_astar,3394.1,0.5984,0.9633,0.6903,0.0,23,3644.7,True
+Thriperumthura,24418.0,16218,15693,627.7,69.6,True,1.0,shortest_path,5114.1,0.3167,1.0,0.3276,0.0684,33,5811.4,False
+Thriperumthura,24418.0,16218,15693,627.7,69.6,True,1.0,risk_aware_astar,5139.1,0.3023,1.0,0.326,0.0681,35,5836.4,False
+Ala (part),20492.0,13548,13548,112.7,112.7,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,225.4,True
+Ala (part),20492.0,13548,13548,112.7,112.7,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,225.4,True
+Pallippad,32093.0,12162,16785,97.7,55.1,False,1.0,shortest_path,2715.8,0.133,0.5633,0.0454,0.0,24,2868.6,True
+Pallippad,32093.0,12162,16785,97.7,55.1,False,1.0,risk_aware_astar,2715.8,0.133,0.5633,0.0454,0.0,24,2868.6,True
+Chennithala,21705.0,11185,13942,50.3,34.7,False,1.0,shortest_path,2275.6,0.3964,1.0,0.172,0.0,10,2360.6,True
+Chennithala,21705.0,11185,13942,50.3,34.7,False,1.0,risk_aware_astar,2275.6,0.3964,1.0,0.172,0.0,10,2360.6,True
+Cheriyanad,31815.0,13117,13174,135.1,188.2,False,1.0,shortest_path,972.4,0.5329,0.5633,0.6931,0.0,11,1295.7,True
+Cheriyanad,31815.0,13117,13174,135.1,188.2,False,1.0,risk_aware_astar,972.4,0.5329,0.5633,0.6931,0.0,11,1295.7,True
+Karthikappally,23913.0,11819,11495,50.9,45.6,False,1.0,shortest_path,1737.8,0.0041,0.0267,0.0,0.0,17,1834.3,True
+Karthikappally,23913.0,11819,11495,50.9,45.6,False,1.0,risk_aware_astar,1737.8,0.0041,0.0267,0.0,0.0,17,1834.3,True
+Venmony,33606.0,12738,12680,129.1,70.9,False,1.0,shortest_path,1348.8,0.1941,0.59,0.2674,0.0,8,1548.8,True
+Venmony,33606.0,12738,12680,129.1,70.9,False,1.0,risk_aware_astar,1348.8,0.1941,0.59,0.2674,0.0,8,1548.8,True
+Thazhakara (part),27269.0,10502,12837,210.7,144.2,False,1.0,shortest_path,2109.9,0.0,0.0,0.0,0.0,12,2464.8,True
+Thazhakara (part),27269.0,10502,12837,210.7,144.2,False,1.0,risk_aware_astar,2109.9,0.0,0.0,0.0,0.0,12,2464.8,True
+Chingoli,26132.0,11570,5743,162.4,38.7,False,1.0,shortest_path,754.1,0.0,0.0,0.0,0.0,6,955.2,True
+Chingoli,26132.0,11570,5743,162.4,38.7,False,1.0,risk_aware_astar,754.1,0.0,0.0,0.0,0.0,6,955.2,True
+Kannamangalam (part),35386.0,9880,9942,147.8,78.0,False,1.0,shortest_path,546.3,0.0464,0.0833,0.0,0.0,5,772.1,True
+Kannamangalam (part),35386.0,9880,9942,147.8,78.0,False,1.0,risk_aware_astar,546.3,0.0464,0.0833,0.0,0.0,5,772.1,True
+Mavelikkara,56647.0,10410,10378,21.3,57.4,False,1.0,shortest_path,603.1,0.0,0.0,0.0,0.0,8,681.8,True
+Mavelikkara,56647.0,10410,10378,21.3,57.4,False,1.0,risk_aware_astar,603.1,0.0,0.0,0.0,0.0,8,681.8,True
+Cheppad,35010.0,5944,5863,125.2,25.3,False,1.0,shortest_path,996.3,0.0,0.0,0.0,0.0,6,1146.8,True
+Cheppad,35010.0,5944,5863,125.2,25.3,False,1.0,risk_aware_astar,996.3,0.0,0.0,0.0,0.0,6,1146.8,True
+Vettiyar,32226.0,9294,9275,151.9,116.7,False,1.0,shortest_path,880.0,0.0,0.0,0.0,0.0,5,1148.6,True
+Vettiyar,32226.0,9294,9275,151.9,116.7,False,1.0,risk_aware_astar,880.0,0.0,0.0,0.0,0.0,5,1148.6,True
+Arattupuzha,14666.0,4975,4975,494.7,494.7,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,989.4,True
+Arattupuzha,14666.0,4975,4975,494.7,494.7,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,989.4,True
+Noornad,36548.0,8627,8593,21.0,63.1,False,1.0,shortest_path,1344.6,0.1632,0.7933,0.2057,0.0,7,1428.7,True
+Noornad,36548.0,8627,8593,21.0,63.1,False,1.0,risk_aware_astar,1344.6,0.1632,0.7933,0.2057,0.0,7,1428.7,True
+Muthukulam,27877.0,5688,5681,121.7,26.4,False,1.0,shortest_path,487.5,0.0,0.0,0.0,0.0,4,635.6,True
+Muthukulam,27877.0,5688,5681,121.7,26.4,False,1.0,risk_aware_astar,487.5,0.0,0.0,0.0,0.0,4,635.6,True
+Thekkekara (part),48403.0,7904,7654,64.6,88.3,False,1.0,shortest_path,1420.1,0.2342,1.0,0.2342,0.0,12,1573.0,True
+Thekkekara (part),48403.0,7904,7654,64.6,88.3,False,1.0,risk_aware_astar,1420.1,0.2342,1.0,0.2342,0.0,12,1573.0,True
+Pathiyoor (part),26994.0,8026,8025,45.2,129.4,False,1.0,shortest_path,315.6,0.0,0.0,0.0,0.0,1,490.2,True
+Pathiyoor (part),26994.0,8026,8025,45.2,129.4,False,1.0,risk_aware_astar,315.6,0.0,0.0,0.0,0.0,1,490.2,True
+Keerikkad (part),21058.0,7405,5413,25.3,23.6,False,1.0,shortest_path,3336.5,0.0,0.0,0.0,0.0,30,3385.4,True
+Keerikkad (part),21058.0,7405,5413,25.3,23.6,False,1.0,risk_aware_astar,3336.5,0.0,0.0,0.0,0.0,30,3385.4,True
+Perungala,18445.0,7788,7763,332.9,94.6,False,1.0,shortest_path,584.0,0.0,0.0,0.0,0.0,2,1011.5,True
+Perungala,18445.0,7788,7763,332.9,94.6,False,1.0,risk_aware_astar,584.0,0.0,0.0,0.0,0.0,2,1011.5,True
+Chunakkara,32921.0,6623,6613,248.6,275.8,False,1.0,shortest_path,615.7,0.0,0.0,0.0,0.0,4,1140.1,True
+Chunakkara,32921.0,6623,6613,248.6,275.8,False,1.0,risk_aware_astar,615.7,0.0,0.0,0.0,0.0,4,1140.1,True
+Palamel,35327.0,6216,6853,85.7,26.3,False,1.0,shortest_path,2667.4,0.0,0.0,0.0,0.0,14,2779.4,True
+Palamel,35327.0,6216,6853,85.7,26.3,False,1.0,risk_aware_astar,2667.4,0.0,0.0,0.0,0.0,14,2779.4,True
+Kattanam,34191.0,2954,2384,36.7,68.8,False,1.0,shortest_path,3293.3,0.0,0.0,0.0,0.0,19,3398.8,True
+Kattanam,34191.0,2954,2384,36.7,68.8,False,1.0,risk_aware_astar,3293.3,0.0,0.0,0.0,0.0,19,3398.8,True
+Kandalloor,26575.0,4625,4883,80.5,114.6,False,1.0,shortest_path,1497.0,0.0,0.0,0.0,0.0,8,1692.1,True
+Kandalloor,26575.0,4625,4883,80.5,114.6,False,1.0,risk_aware_astar,1497.0,0.0,0.0,0.0,0.0,8,1692.1,True
+Bharanikkavu,23151.0,1499,1499,69.1,69.1,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,138.2,True
+Bharanikkavu,23151.0,1499,1499,69.1,69.1,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,138.2,True
+Kayamkulam,90164.0,3039,3060,17.3,128.9,False,1.0,shortest_path,1266.6,0.0,0.0,0.0,0.0,14,1412.8,True
+Kayamkulam,90164.0,3039,3060,17.3,128.9,False,1.0,risk_aware_astar,1266.6,0.0,0.0,0.0,0.0,14,1412.8,True
+Krishnapuram (part),21892.0,942,942,63.5,63.5,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,127.0,True
+Krishnapuram (part),21892.0,942,942,63.5,63.5,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,127.0,True
+Thamarakkulam,33813.0,1998,2336,71.0,91.6,False,1.0,shortest_path,2762.5,0.3342,0.96,0.328,0.0,12,2925.1,True
+Thamarakkulam,33813.0,1998,2336,71.0,91.6,False,1.0,risk_aware_astar,2762.5,0.3342,0.96,0.328,0.0,12,2925.1,True
+Puthuppally (part),26624.0,4458,4458,72.6,72.6,False,1.0,shortest_path,0.0,0.0,0.0,0.0,0.0,0,145.2,True
+Puthuppally (part),26624.0,4458,4458,72.6,72.6,False,1.0,risk_aware_astar,0.0,0.0,0.0,0.0,0.0,0,145.2,True
+Vallikunnam,31432.0,1822,1793,151.4,34.1,False,1.0,shortest_path,717.8,0.0,0.0,0.0,0.0,6,903.3,True
+Vallikunnam,31432.0,1822,1793,151.4,34.1,False,1.0,risk_aware_astar,717.8,0.0,0.0,0.0,0.0,6,903.3,True

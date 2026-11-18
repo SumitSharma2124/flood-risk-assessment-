@@ -1,0 +1,41 @@
+{
+    "model": "Original U-Net",
+    "checkpoint": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\models\\task10_unet_best.pt",
+    "checkpoint_epoch": 7,
+    "output_file": "C:\\Users\\sumit\\Documents\\code\\projects\\AI-course\\flood_risk\\outputs\\rasters\\10_unet_full_district_prediction.tif",
+    "feature_names": [
+        "elevation",
+        "slope",
+        "twi",
+        "distance_waterway",
+        "trees",
+        "cropland",
+        "builtup",
+        "water",
+        "wetland",
+        "mangrove"
+    ],
+    "feature_bands_1_based": [
+        1,
+        2,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    "patch_size": 16,
+    "block_size_metres": 5000,
+    "prediction_cells": 176745,
+    "inference_patches": 1217,
+    "prediction_min": 7.990631103515625,
+    "prediction_max": 369.5894470214844,
+    "prediction_mean": 202.16171264648438,
+    "target_mean": 270.157498,
+    "target_std": 113.758504,
+    "nodata": -9999.0,
+    "note": "Predictions outside the KSDMA modelled mask are extrapolations, not independently validated hazard values."
+}
